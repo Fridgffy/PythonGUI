@@ -115,9 +115,11 @@ class Root():
 		def finputclean():
 			t_input.delete('1.0','end')
 
-		# def foutputclean():
-		# 	t_output.delete('1.0','end')
-
+		# 清除空白字符
+		def fstrip():
+			t_output.delete('1.0','end')
+			b = t_input.get(0.0,tk.END).strip().replace(' ','').replace('\n','').replace('\t','')
+			t_output.insert('insert',b)
 		# 复制按钮
 		def fcopy():
 			pyperclip.copy(t_output.get(0.0,tk.END).strip())
@@ -141,6 +143,9 @@ class Root():
 
 		b_replace = self.create_button(self.tab_replace,freplace,'Replace')
 		b_replace.grid(row=1,column=3,columnspan=1)
+
+		b_strip = self.create_button(self.tab_replace,fstrip,'Strip')
+		b_strip.grid(row=1,column=4)
 
 		t_output = self.create_text(self.tab_replace,90,15)
 		t_output.grid(row=2,column=0,columnspan=4)
