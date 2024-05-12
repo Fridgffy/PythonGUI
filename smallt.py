@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import pyperclip
+import requests
+import time
+import sys
 
 
 
@@ -28,8 +31,14 @@ class Root():
 		self.notebook.add(self.tab_pings,text="Pings")
 		self.create_pings()
 		
+		# 创建标签页URLTest
+		self.tab_urltest = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_urltest,text="URLTest")
+		self.create_urltest()
+
 		self.notebook.pack()
-	# 主面板设置
+	
+	# 主面板大小设置
 	def set_window(self):
 		self.window.title('SmallTools')
 		width = 930
@@ -39,6 +48,7 @@ class Root():
 		size_geo = '%dx%d+%d+%d' % (width, height, (screenwidth-width)/2, (screenheight-height)/2)
 
 		self.window.geometry(size_geo)
+
 
 	# 生成函数
 	def create_button(self,tab,function,display,w=10):
@@ -58,7 +68,8 @@ class Root():
 		e = tk.Entry(tab,show=None,width=w,font=('Consolas','12'))
 		return e
 
-	# 标签页pings创建函数
+##### 创建标签页pings
+
 	def create_pings(self):
 		# ping按钮函数
 		def fping():
@@ -71,9 +82,10 @@ class Root():
 					p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 					result = p.stdout.read().decode('gbk')
 					if not p.stderr.read():
-						if result:
-							t_output.insert('insert',result)
-							t_output.insert('insert','—————————————————————————————————————————————')
+						if result and 'TTL' in result:
+							t_output.insert('insert',ip)
+							t_output.insert('insert','\n')
+							# t_output.insert('insert','—————————————————————————————————————————————')
 
 		
 		# 清空按钮函数
@@ -101,7 +113,8 @@ class Root():
 		b_clean_output.grid(row=0,column=2)
 
 
-	# 创建标签页replace
+##### 创建标签页replace
+
 	def create_replace(self):
 		# 替换按钮函数
 		def freplace():
@@ -157,10 +170,11 @@ class Root():
 		b_copy.grid(row=2,column=4)
 
 
-	# 创建标签页scp
-	# 输入框绑定的事件
+##### 创建标签页scp
+
+	# # 输入框绑定的事件
 	# def clean(self,display_result):
-	#	 self.display_result('')
+	# 	self.display_result('')
 
 	# 结果显示
 	def display_result(self,result):
@@ -183,20 +197,33 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'45.32.104.206')
+			e_ip.insert(0,'45.76.161.55')
+			e_port.delete(0,tk.END)
+			e_port.insert(0,'31234')
 		def fkali():
 			e_ip.delete(0,tk.END)
 			e_ip.insert(0,'192.168.1.80')
+			e_port.delete(0,tk.END)
+			e_port.insert(0,'22')
 		def fkali3():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.124.182')
+			e_ip.insert(0,'192.168.124.183')
+			e_port.delete(0,tk.END)
+			e_port.insert(0,'22')
 
 		# 远程IP地址
-		l_ip = tk.Label(self.tab_scp,text='IP:',width=25,height=1,font=('Consolas','12'))
+		l_ip = tk.Label(self.tab_scp,text='IP:',width=8,height=1,font=('Consolas','12'))
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'192.168.124.182')
+		e_ip.insert(0,'192.168.124.183')
+
+		# 设置端口
+		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
+		l_port.grid(row=0,column=2,sticky=tk.W)
+		e_port = self.create_entry(self.tab_scp,w=8)
+		e_port.grid(row=0,column=3,sticky=tk.W)
+		
 
 		# 更改IP按钮
 		b_vps = self.create_button(self.tab_scp,fvps,'VPS')
@@ -206,7 +233,7 @@ class Root():
 		b_kali.grid(row=1,column=1,sticky=tk.W)
 
 		b_kali = self.create_button(self.tab_scp,fkali,'KALI')
-		b_kali.grid(row=1,column=2,sticky=tk.W)
+		b_kali.grid(row=1,column=3,sticky=tk.W)
 		
 		# 按钮调用函数
 		def button_download():
@@ -227,7 +254,7 @@ class Root():
 									file_name = path + '/' + name
 								else:
 									file_name = path + name
-								command = 'scp root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get())
+								command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
 								try:
 									p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
 									stderr = p.stderr.read()
@@ -266,7 +293,7 @@ class Root():
 										file_name = path + '/' + name
 									else:
 										file_name = path + name
-									command = 'scp {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get())
+									command = 'scp -P {port} {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
 									try:
 										p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
 										stderr = p.stderr.read()
@@ -294,6 +321,8 @@ class Root():
 		# upload clean button
 		def clean_upload():
 			e_upload_local_file.delete(0,tk.END)
+
+
 
 		# 分隔符
 		l_separator_ = tk.Label(self.tab_scp,text='—'*75,height=1)
@@ -373,6 +402,112 @@ class Root():
 		# clean 按钮
 		b_upload_clean = self.create_button(self.tab_scp,clean_upload,'Clean')
 		b_upload_clean.grid(row=13,column=4)
+
+##### 创建标签页URLTest
+	
+	# 结果显示
+	def display(self,result):
+		# l_result = self.create_label(result)
+		l_result = tk.Label(self.tab_urltest,text=result,font=('Consolas','12'),width=80,height=4)
+		l_result.grid(row=30,column=0,columnspan=10)
+
+	def create_urltest(self):
+		# 复制按钮
+		def fcopy():
+			pyperclip.copy(t_out.get(0.0,tk.END).strip())
+		#clean按钮
+		def clean_download():
+			t_path.delete(0.0,tk.END)
+
+		def button_test():
+			t_out.delete(0.0,tk.END)
+			paths = t_path.get(0.0,tk.END).strip().split('\n')
+			host = e_host.get()
+		
+			# 测试输入是否为空
+			if not host:
+				self.display('host is empty!')
+
+			else:
+				self.display('')
+				for path in paths:
+					url = host.strip() + path.strip()
+					url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
+
+					res = requests.get(url=url,headers={"user-agent":"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"},allow_redirects=False,proxies={"http":"http://127.0.0.1:7890","https":"http://127.0.0.1:7890"})
+					code = res.status_code
+
+					if "Location" in res.headers.keys():
+						location = res.headers['Location']
+					else:
+						location = ""
+
+					if code == 404:
+						pass
+					elif location == "/pageshow?pageId=1440505892360679424":
+						pass
+					else:
+						t_out.insert('insert',url+'\n')
+					
+					time.sleep(4)
+				
+				
+
+				
+				# print('Has been tested %d url!' %(total + 1))
+				# # sys.stdout.write('\r')
+				# total = total + 1
+
+				
+
+		# Host:
+		l_host = self.create_label(self.tab_urltest,"Host:",w=15,h=1)
+		l_host.grid(row=0,column=0)
+
+		e_host = self.create_entry(self.tab_urltest,w=15)
+		e_host.grid(row=0,column=1)
+
+		# button
+		b_test = self.create_button(self.tab_urltest,button_test,'Test')
+		b_test.grid(row=0,column=2)
+		
+		# Header
+		l_header = self.create_label(self.tab_urltest,"Location:",w=10,h=1)
+		l_header.grid(row=1,column=0)
+
+		e_header = self.create_entry(self.tab_urltest,w=10)
+		e_header.grid(row=1,column=1)
+
+		l_code = self.create_label(self.tab_urltest,"Status_code:",w=15)
+		l_code.grid(row=2,column=0)
+
+		e_code = self.create_entry(self.tab_urltest,w=10)
+		e_code.grid(row=2,column=1)
+
+		# Path
+		l_path = self.create_label(self.tab_urltest,"Path:",w=15,h=1)
+		l_path.grid(row=3,column=0)
+
+		t_path = self.create_text(self.tab_urltest,w=35,h=23)
+		t_path.grid(row=3,column=1)
+
+		# clean button
+		b_down_clean = self.create_button(self.tab_urltest,clean_download,'Clean')
+		b_down_clean.grid(row=4,column=1)
+
+		# output
+		l_out = self.create_label(self.tab_urltest,"Output:",w=10,h=1)
+		l_out.grid(row=3,column=2)
+
+		t_out = self.create_text(self.tab_urltest,w=35,h=23)
+		t_out.grid(row=3,column=3)
+
+		# copy button
+		b_copy = self.create_button(self.tab_urltest,fcopy,'Copy')
+		b_copy.grid(row=4,column=3)
+
+
+
 
 
 if __name__ == '__main__':
