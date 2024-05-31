@@ -657,18 +657,17 @@ class Root():
 				command = "start chrome %s" %(url)
 				try:
 					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-					
-					if stderr:
-						result = p.stdout.read().decode('gbk')
-						self.display_dealwith(result)
-					else:
-						result = 'Access success!'
-						self.display_dealwith(result)
 				except Exception as e:
 					self.display_dealwith(e)
+
+				if not p.stderr.read():
+					self.display_dealwith('Access success!')						
+				
 			else:
 				self.display_dealwith("username is Empty!")
-			
+
+			# self.display_dealwith(username)
+		
 
 		def Btwo():
 			pass
@@ -710,8 +709,8 @@ class Root():
 		l_input2 = self.create_label(self.tab_dealwith,"Input2:")
 		l_input2.grid(row=4,column=0)
 
-		t_input1 = self.create_text(self.tab_dealwith,w=50,h=10)
-		t_input1.grid(row=4,column=1)
+		t_input2 = self.create_text(self.tab_dealwith,w=50,h=10)
+		t_input2.grid(row=4,column=1)
 
 		# 输入框2 说明
 		l_input2_des = self.create_label(self.tab_dealwith,"Des:")
