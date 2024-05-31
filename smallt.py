@@ -1,3 +1,4 @@
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import tkinter as tk
 from tkinter import ttk
 import subprocess
@@ -7,6 +8,7 @@ import time
 import sys
 
 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class Root():
 	# 构造函数
@@ -18,23 +20,28 @@ class Root():
 
 		# 创建标签页scp
 		self.tab_scp = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_scp,text="SCP")
+		self.notebook.add(self.tab_scp,text="SCP    ")
 		self.create_scp()
 
 		# 创建标签页replace
 		self.tab_replace = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_replace,text="Replace")
+		self.notebook.add(self.tab_replace,text="    Replace    ")
 		self.create_replace()
 
 		# 创建标签页pings
 		self.tab_pings = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_pings,text="Pings")
+		self.notebook.add(self.tab_pings,text="    Pings    ")
 		self.create_pings()
 		
 		# 创建标签页URLTest
 		self.tab_urltest = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_urltest,text="URLTest")
+		self.notebook.add(self.tab_urltest,text="    URLTest    ")
 		self.create_urltest()
+
+		# 创建标签页 dealwith 用于对URL做自定义处理
+		self.tab_dealwith = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_dealwith,text="    Deal with URL    ")
+		self.create_dealwith()
 
 		self.notebook.pack()
 	
@@ -42,7 +49,7 @@ class Root():
 	def set_window(self):
 		self.window.title('SmallTools')
 		width = 930
-		height = 650
+		height = 700
 		screenwidth = self.window.winfo_screenwidth()
 		screenheight = self.window.winfo_screenheight()
 		size_geo = '%dx%d+%d+%d' % (width, height, (screenwidth-width)/2, (screenheight-height)/2)
@@ -69,38 +76,52 @@ class Root():
 		return e
 
 ##### 创建标签页pings
+	def display_pings(self,result):
+		# l_result = self.create_label(result)
+		l_result = tk.Label(self.tab_pings,text=result,font=('Consolas','12'),width=100,height=5)
+		l_result.grid(row=30,column=0,columnspan=10)
 
 	def create_pings(self):
 		# ping按钮函数
 		def fping():
 			ips = t_input.get(0.0,tk.END)
+			self.display_pings('')
 			# 循环内容
 			for ip in ips.strip().split('\n'):
 				# 判断IP是否为空
 				if ip:
-					com = 'ping -n 1 -w 1 %s' %(ip)
-					p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-					result = p.stdout.read().decode('gbk')
+					com = 'ping -n 2 -w 2 %s' %(ip)
+					try:
+						p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+						result = p.stdout.read().decode('gbk')
+					except Exception as e:
+						self.display_pings(e)
+
 					if not p.stderr.read():
-						if result and 'TTL' in result:
+						if result and '32' in result:
 							t_output.insert('insert',ip)
 							t_output.insert('insert','\n')
+							self.display_pings('Pings Completed!')
 							# t_output.insert('insert','—————————————————————————————————————————————')
-
+					else:
+						self.display_pings(p.stderr.read())
+				else:
+					self.display_pings('Input ip or hostname!')
 		
 		# 清空按钮函数
 		def finputclean():
 			t_input.delete(0.0,tk.END)
+			self.display_pings('')
 
 		def foutputclean():
 			t_output.delete(0.0,tk.END)
-
+			self.display_pings('')
 
 		# 设置控件	
-		t_input = self.create_text(self.tab_pings,w=45,h=31)
+		t_input = self.create_text(self.tab_pings,w=45,h=27)
 		t_input.grid(row=1,column=0,rowspan=2)
 
-		t_output = self.create_text(self.tab_pings,w=45,h=31)
+		t_output = self.create_text(self.tab_pings,w=45,h=27)
 		t_output.grid(row=1,column=2,rowspan=2)
 
 		b_ping = self.create_button(self.tab_pings,fping,'Ping')
@@ -184,7 +205,7 @@ class Root():
 
 	# 判断IP是否存活
 	def test_ip(self,ip):
-		command = 'ping -n 1 -w 1 {}'.format(ip)
+		command = 'ping -n 2 -w 2 {}'.format(ip)
 		p = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
 		stdout = p.stdout.read().decode('gbk')
 		if 'TTL' in stdout:
@@ -254,7 +275,9 @@ class Root():
 									file_name = path + '/' + name
 								else:
 									file_name = path + name
-								command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								# command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								
 								try:
 									p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
 									stderr = p.stderr.read()
@@ -317,11 +340,11 @@ class Root():
 		# download clean button
 		def clean_download():
 			e_down_remote_file.delete(0,tk.END)
-
+			self.display_result('')
 		# upload clean button
 		def clean_upload():
 			e_upload_local_file.delete(0,tk.END)
-
+			self.display_result('')
 
 
 		# 分隔符
@@ -408,57 +431,152 @@ class Root():
 	# 结果显示
 	def display(self,result):
 		# l_result = self.create_label(result)
-		l_result = tk.Label(self.tab_urltest,text=result,font=('Consolas','12'),width=80,height=4)
+		l_result = tk.Label(self.tab_urltest,text=result,font=('Consolas','12'),width=100,height=4)
 		l_result.grid(row=30,column=0,columnspan=10)
 
 	def create_urltest(self):
 		# 复制按钮
 		def fcopy():
 			pyperclip.copy(t_out.get(0.0,tk.END).strip())
-		#clean按钮
+			self.display('')
+		# clean按钮
 		def clean_download():
 			t_path.delete(0.0,tk.END)
+			self.display('')
+		# yes 按钮
+		def fyes():
+			e_full.delete(0,tk.END)	
+			e_full.insert(0,'yes')
+			self.display('')
+		#no 按钮
+		def fno():
+			e_full.delete(0,tk.END)	
+			e_full.insert(0,'no')
+			self.display('')
+		# 404按钮
+		def f404():
+			e_code.delete(0,tk.END)
+			e_code.insert(0,'404')
+			self.display('')
+		# 302按钮
+		def f302():
+			e_code.delete(0,tk.END)
+			e_code.insert(0,'302')
+			self.display('')
+		# 302请求函数
+		def req_302(url):
+			try:
+				res = requests.get(url=url,headers={"user-agent":"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"},proxies={"http":"http://127.0.0.1:7890","https":"http://127.0.0.1:7890"},verify=False,allow_redirects=False)
+				#
+				code = res.status_code
+
+				if "Location" in res.headers.keys():
+					location = res.headers['Location']
+				else:
+					location = ""
+				
+				if code == 404:
+					pass
+				elif location == "/pageshow?pageId=1440505892360679424":
+					pass
+				else:
+					t_out.insert('insert',url+' | '+str(code)+'\n')
+				
+				time.sleep(4)
+			except Exception as e:
+				self.display(e)
+
+		# 404 请求函数
+		def req_404(url):
+			try:
+				res = requests.get(url=url,headers={"user-agent":"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"},proxies={"http":"http://127.0.0.1:7890","https":"http://127.0.0.1:7890"},verify=False,allow_redirects=False)
+				#
+				code = res.status_code
+
+				if code == 404:
+					pass
+				else:
+					t_out.insert('insert',url+' | '+str(code)+'\n')
+				
+				time.sleep(4)
+			except Exception as e:
+				self.display(e)
+
+
 
 		def button_test():
+			self.display('')
+			yesno = e_full.get()
+			statuscode = e_code.get()
+
 			t_out.delete(0.0,tk.END)
+			
 			paths = t_path.get(0.0,tk.END).strip().split('\n')
 			host = e_host.get()
-		
-			# 测试输入是否为空
-			if not host:
-				self.display('host is empty!')
+			# 判断状态码
+			if not statuscode:
+				self.display('Fill in the Status_code!')
 
+			elif statuscode == '404':
+
+				# 判断是否为完整URL
+				if not yesno:
+					self.display('IsFullURL value is yes or no!')
+
+				# 完整URL
+				elif yesno == 'yes':
+					self.display('')
+					for path in paths:
+						url = path.strip()
+						url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
+						req_404(url)
+
+				# 非完整URL
+				elif yesno == 'no':
+
+					# 测试输入是否为空
+					if not host:
+						self.display('host is empty!')
+					else:
+						self.display('')
+						for path in paths:
+							url = host.strip() + path.strip()
+							url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
+							req_404(url)
+
+				else:
+					self.display('IsFullURL value is yes or no!')
+
+			elif statuscode == '302':
+				# 判断是否为完整URL
+				if not yesno:
+					self.display('IsFullURL value is yes or no!')
+
+				# 完整URL
+				elif yesno == 'yes':
+					self.display('')
+					for path in paths:
+						url = path.strip()
+						url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
+						req_404(url)
+
+				# 非完整URL
+				elif yesno == 'no':
+
+					# 测试输入是否为空
+					if not host:
+						self.display('host is empty!')
+					else:
+						self.display('')
+						for path in paths:
+							url = host.strip() + path.strip()
+							url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
+							req_404(url)
+
+				else:
+					self.display('IsFullURL value is yes or no!')
 			else:
-				self.display('')
-				for path in paths:
-					url = host.strip() + path.strip()
-					url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
-
-					res = requests.get(url=url,headers={"user-agent":"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"},allow_redirects=False,proxies={"http":"http://127.0.0.1:7890","https":"http://127.0.0.1:7890"})
-					code = res.status_code
-
-					if "Location" in res.headers.keys():
-						location = res.headers['Location']
-					else:
-						location = ""
-
-					if code == 404:
-						pass
-					elif location == "/pageshow?pageId=1440505892360679424":
-						pass
-					else:
-						t_out.insert('insert',url+'\n')
-					
-					time.sleep(4)
-				
-				
-
-				
-				# print('Has been tested %d url!' %(total + 1))
-				# # sys.stdout.write('\r')
-				# total = total + 1
-
-				
+				self.display('Status_code will be 404 or 302!')
 
 		# Host:
 		l_host = self.create_label(self.tab_urltest,"Host:",w=15,h=1)
@@ -471,18 +589,36 @@ class Root():
 		b_test = self.create_button(self.tab_urltest,button_test,'Test')
 		b_test.grid(row=0,column=2)
 		
-		# Header
-		l_header = self.create_label(self.tab_urltest,"Location:",w=10,h=1)
-		l_header.grid(row=1,column=0)
+		# 是否是完整的URL
+		l_full = self.create_label(self.tab_urltest,"IsFullURL:",w=10,h=1)
+		l_full.grid(row=1,column=0)
 
-		e_header = self.create_entry(self.tab_urltest,w=10)
-		e_header.grid(row=1,column=1)
+		e_full = self.create_entry(self.tab_urltest,w=10)
+		e_full.grid(row=1,column=1)
+		e_full.insert(0,'no')
 
+		# yes button 
+		b_yes = self.create_button(self.tab_urltest,fyes,'yes')
+		b_yes.grid(row=1,column=2)
+
+		# no button 
+		b_no = self.create_button(self.tab_urltest,fno,'no')
+		b_no.grid(row=1,column=3)
+
+		#http code
 		l_code = self.create_label(self.tab_urltest,"Status_code:",w=15)
 		l_code.grid(row=2,column=0)
 
 		e_code = self.create_entry(self.tab_urltest,w=10)
 		e_code.grid(row=2,column=1)
+		e_code.insert(0,'404')
+
+		# code botton
+		b_404 = self.create_button(self.tab_urltest,f404,"404")
+		b_404.grid(row=2,column=2)
+
+		b_302 = self.create_button(self.tab_urltest,f302,"302")
+		b_302.grid(row=2,column=3)
 
 		# Path
 		l_path = self.create_label(self.tab_urltest,"Path:",w=15,h=1)
@@ -507,8 +643,135 @@ class Root():
 		b_copy.grid(row=4,column=3)
 
 
+##### 创建标签页 dealwith 用于对URL做自定义处理
+	def display_dealwith(self,result):
+		l_result = tk.Label(self.tab_dealwith,text=result,font=('Consolas','12'),width=100,height=5)
+		l_result.grid(row=30,column=0,columnspan=10)
+
+	def create_dealwith(self):
+# Button1 函数
+		def Bone():
+			username = t_input1.get(0.0,tk.END).strip().replace('。','').replace('@','')
+			if username:
+				url = "https://t.me/" + username
+				command = "start chrome %s" %(url)
+				try:
+					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
+					
+					if stderr:
+						result = p.stdout.read().decode('gbk')
+						self.display_dealwith(result)
+					else:
+						result = 'Access success!'
+						self.display_dealwith(result)
+				except Exception as e:
+					self.display_dealwith(e)
+			else:
+				self.display_dealwith("username is Empty!")
+			
+
+		def Btwo():
+			pass
 
 
+		# 自定义说明
+		Description = "快捷访问电报机器人"
+
+		# 说明
+		l_description = self.create_label(self.tab_dealwith,"Description:",w=20)
+		l_description.grid(row=0,column=0)
+
+		l_descriptions = self.create_label(self.tab_dealwith,display=Description,w=50)
+		l_descriptions.grid(row=0,column=1)
+
+		# 分隔符
+		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
+		l_separator2.grid(row=1,column=0)
+
+		# 输入框1
+		l_input1 = self.create_label(self.tab_dealwith,"Input1:")
+		l_input1.grid(row=2,column=0)
+
+		t_input1 = self.create_text(self.tab_dealwith,w=50,h=10)
+		t_input1.grid(row=2,column=1)
+
+		# 输入框1 说明
+		l_input1_des = self.create_label(self.tab_dealwith,"Des:")
+		l_input1_des.grid(row=2,column=2)
+
+		e_input1_des = self.create_entry(self.tab_dealwith)
+		e_input1_des.grid(row=2,column=3)
+
+		# 分隔符
+		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
+		l_separator2.grid(row=3,column=0)
+
+		# 输入框2
+		l_input2 = self.create_label(self.tab_dealwith,"Input2:")
+		l_input2.grid(row=4,column=0)
+
+		t_input1 = self.create_text(self.tab_dealwith,w=50,h=10)
+		t_input1.grid(row=4,column=1)
+
+		# 输入框2 说明
+		l_input2_des = self.create_label(self.tab_dealwith,"Des:")
+		l_input2_des.grid(row=4,column=2)
+
+		e_input2_des = self.create_entry(self.tab_dealwith)
+		e_input2_des.grid(row=4,column=3)
+
+		e_input2_des.insert(0,'Not enabled')
+
+		# 分隔符
+		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
+		l_separator2.grid(row=5,column=0)
+
+		# # 输入框3
+		# l_input3 = self.create_label(self.tab_dealwith,"Input2:")
+		# l_input3.grid(row=6,column=0)
+
+		# e_input3 = self.create_entry(self.tab_dealwith,w=50)
+		# e_input3.grid(row=6,column=1)
+
+		# # 输入框2 说明
+		# l_input3_des = self.create_label(self.tab_dealwith,"Des:")
+		# l_input3_des.grid(row=6,column=2)
+
+		# e_input3_des = self.create_entry(self.tab_dealwith)
+		# e_input3_des.grid(row=6,column=3)
+
+		# e_input3_des.insert(0,'Not enabled')
+
+		# # 分隔符
+		# l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
+		# l_separator2.grid(row=7,column=0)
+
+		# 按钮1
+		b_1 = self.create_button(self.tab_dealwith,Bone,'Button1')
+		b_1.grid(row=8,column=1)
+
+		l_b1 = self.create_label(self.tab_dealwith,"Des:")
+		l_b1.grid(row=8,column=2)
+
+		e_b1_des = self.create_entry(self.tab_dealwith)
+		e_b1_des.grid(row=8,column=3)
+
+		# 分隔符
+		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
+		l_separator2.grid(row=9,column=0)
+
+		# 按钮2
+		b_2 = self.create_button(self.tab_dealwith,Btwo,"Button2")
+		b_2.grid(row=10,column=1)
+
+		l_b2 = self.create_label(self.tab_dealwith,"Des:")
+		l_b2.grid(row=10,column=2)
+
+		e_b2_des = self.create_entry(self.tab_dealwith)
+		e_b2_des.grid(row=10,column=3)
+		e_b2_des.insert(0,'Not enabled')
+
+	
 
 if __name__ == '__main__':
 	
