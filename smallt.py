@@ -651,31 +651,14 @@ class Root():
 	def create_dealwith(self):
 # Button1 函数
 		def Bone():
-			username = t_input1.get(0.0,tk.END).strip().replace('。','').replace('@','')
-			if username:
-				url = "https://t.me/" + username
-				command = "start chrome %s" %(url)
-				try:
-					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-					
-					if stderr:
-						result = p.stdout.read().decode('gbk')
-						self.display_dealwith(result)
-					else:
-						result = 'Access success!'
-						self.display_dealwith(result)
-				except Exception as e:
-					self.display_dealwith(e)
-			else:
-				self.display_dealwith("username is Empty!")
+			pass
 			
-
 		def Btwo():
 			pass
 
 
 		# 自定义说明
-		Description = "快捷访问电报机器人"
+		Description = "XXX"
 
 		# 说明
 		l_description = self.create_label(self.tab_dealwith,"Description:",w=20)
