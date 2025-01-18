@@ -218,17 +218,17 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'45.76.161.55')
+			e_ip.insert(0,'207.148.127.5')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'31234')
 		def fkali():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.1.80')
+			e_ip.insert(0,'192.168.79.128')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 		def fkali3():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.124.183')
+			e_ip.insert(0,'192.168.79.128')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 
@@ -237,13 +237,14 @@ class Root():
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'192.168.124.183')
+		e_ip.insert(0,'192.168.79.128')
 
 		# 设置端口
 		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
 		l_port.grid(row=0,column=2,sticky=tk.W)
 		e_port = self.create_entry(self.tab_scp,w=8)
 		e_port.grid(row=0,column=3,sticky=tk.W)
+		e_port.insert(0,'22')
 		
 
 		# 更改IP按钮
@@ -651,7 +652,7 @@ class Root():
 	def create_dealwith(self):
 # Button1 函数
 		def Bone():
-			username = t_input1.get(0.0,tk.END).strip().replace('。','').replace('@','')
+			username = t_input1.get(0.0,tk.END).strip().replace('。','').replace('@','').replace(';','').replace('；','').replace('.','').replace(',','').replace('，','')
 			if username:
 				url = "https://t.me/" + username
 				command = "start chrome %s" %(url)
