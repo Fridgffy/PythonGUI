@@ -218,7 +218,7 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'207.148.127.5')
+			e_ip.insert(0,'45.76.153.21')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'31234')
 		def fkali():
