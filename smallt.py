@@ -223,12 +223,12 @@ class Root():
 			e_port.insert(0,'31234')
 		def fkali():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.79.128')
+			e_ip.insert(0,'192.168.19.130')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 		def fkali3():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.79.128')
+			e_ip.insert(0,'192.168.19.130')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 
@@ -237,14 +237,14 @@ class Root():
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'192.168.79.128')
+		e_ip.insert(0,'45.76.153.21')
 
 		# 设置端口
 		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
 		l_port.grid(row=0,column=2,sticky=tk.W)
 		e_port = self.create_entry(self.tab_scp,w=8)
 		e_port.grid(row=0,column=3,sticky=tk.W)
-		e_port.insert(0,'22')
+		e_port.insert(0,'31234')
 		
 
 		# 更改IP按钮
@@ -276,14 +276,15 @@ class Root():
 									file_name = path + '/' + name
 								else:
 									file_name = path + name
-								# command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
-								command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								# command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
 								
 								try:
 									p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
 									stderr = p.stderr.read()
 									if stderr:
-										result = stderr
+										result = stderr.decode('gbk')
+										# result = command
 									else:
 										result = 'Download success!'
 								except Exception as e:
@@ -310,7 +311,7 @@ class Root():
 							# 是否写入分隔符
 							if e_upload_separator.get():
 								separator = e_upload_separator.get()
-								file_list = e_upload_local_file.get().split(separator)
+								file_list = e_upload_local_file.get().strip().split(separator)
 								path = e_upload_local_path.get()
 								for name in file_list:
 									if path[-1] != '/' and path[-1] != '\\':
