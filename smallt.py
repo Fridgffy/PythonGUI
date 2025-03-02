@@ -23,6 +23,11 @@ class Root():
 		self.notebook.add(self.tab_scp,text="SCP    ")
 		self.create_scp()
 
+		# 创建标签页 Open URL 自定义URL并且访问
+		self.tab_openurl = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_openurl,text="    Open URL    ")
+		self.create_openurl()
+
 		# 创建标签页replace
 		self.tab_replace = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_replace,text="    Replace    ")
@@ -42,6 +47,8 @@ class Root():
 		self.tab_dealwith = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_dealwith,text="    Deal with URL    ")
 		self.create_dealwith()
+
+
 
 		self.notebook.pack()
 	
@@ -651,7 +658,7 @@ class Root():
 		l_result.grid(row=30,column=0,columnspan=10)
 
 	def create_dealwith(self):
-# Button1 函数
+		# Button1 函数
 		def Bone():
 			username = t_input1.get(0.0,tk.END).strip().replace('。','').replace('@','').replace(';','').replace('；','').replace('.','').replace(',','').replace('，','')
 			if username:
@@ -772,7 +779,107 @@ class Root():
 		e_b2_des.grid(row=10,column=3)
 		e_b2_des.insert(0,'Not enabled')
 
-	
+##### 创建标签页 Open URL 自定义URL并且访问
+	def display_openurl(self,result):
+		l_result = tk.Label(self.tab_openurl,text=result,font=('Consolas','12'),width=100,height=5)
+		l_result.grid(row=30,column=0,columnspan=10)
+
+	def create_openurl(self):
+		# button function
+		def button_open():
+			url = e_url.get()
+			plist = []
+			p1 = e_1.get()
+			p2 = e_2.get()
+			p3 = e_3.get()
+			p4 = e_4.get()
+			p5 = e_5.get()
+			if not url:
+				self.display_openurl('URL is Empty!')
+			else:
+				if p1:
+					plist.append(p1)
+				if p2:
+					plist.append(p2)
+				if p3:
+					plist.append(p3)
+				if p4:
+					plist.append(p4)
+				if p5:
+					plist.append(p5)
+				for i in range(1,len(plist)+1):
+					url = url.replace('${}'.format(i),plist[i-1])
+				
+				command = 'start chrome {url}'.format(url=url)
+				try:
+					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
+					stderr = p.stderr.read()
+					if stderr:
+						result = stderr
+					else:
+						result = 'Successfully opened: {}'.format(url)
+				except Exception as e:
+					result = e
+				self.display_openurl(result)
+			
+
+		# 自定义说明
+		Description = "用$number代表要替代的URL中的变量"
+
+		# 说明
+		l_description = self.create_label(self.tab_openurl,"Description:",w=15)
+		l_description.grid(row=0,column=0)
+
+		l_descriptions = self.create_label(self.tab_openurl,display=Description,w=50)
+		l_descriptions.grid(row=0,column=1)
+
+		# 分隔符
+		l_separator = self.create_label(self.tab_openurl,display=' '*75,h=1)
+		l_separator.grid(row=1,column=0)
+
+		# URL输入框
+		l_url = self.create_label(self.tab_openurl,'URL:',w=10,h=1)
+		l_url.grid(row=2,column=0,sticky=tk.W)
+		e_url = self.create_entry(self.tab_openurl,w=85)
+		e_url.grid(row=2,column=1,sticky=tk.W)
+		e_url.insert(0,'https://api.github.com/repos/$1/$2/releases/latest')
+		# 分隔符2
+		l_separator_2 = self.create_label(self.tab_openurl,display=' '*75,h=1)
+		l_separator_2.grid(row=3,column=0)
+
+		# 输入框1
+		l_1 = self.create_label(self.tab_openurl,'Param1:',w=10,h=1)
+		l_1.grid(row=4,column=0,sticky=tk.W)
+		e_1 = self.create_entry(self.tab_openurl,w=20)
+		e_1.grid(row=4,column=1,sticky=tk.W)
+
+		# 输入框2
+		l_2 = self.create_label(self.tab_openurl,'Param2:',w=10,h=1)
+		l_2.grid(row=5,column=0,sticky=tk.W)
+		e_2 = self.create_entry(self.tab_openurl,w=20)
+		e_2.grid(row=5,column=1,sticky=tk.W)
+
+		# 输入框1
+		l_3 = self.create_label(self.tab_openurl,'Param3:',w=10,h=1)
+		l_3.grid(row=6,column=0,sticky=tk.W)
+		e_3 = self.create_entry(self.tab_openurl,w=20)
+		e_3.grid(row=6,column=1,sticky=tk.W)
+
+		# 输入框1
+		l_4 = self.create_label(self.tab_openurl,'Param4:',w=10,h=1)
+		l_4.grid(row=7,column=0,sticky=tk.W)
+		e_4 = self.create_entry(self.tab_openurl,w=20)
+		e_4.grid(row=7,column=1,sticky=tk.W)
+
+		# 输入框1
+		l_5 = self.create_label(self.tab_openurl,'Param5:',w=10,h=1)
+		l_5.grid(row=8,column=0,sticky=tk.W)
+		e_5 = self.create_entry(self.tab_openurl,w=20)
+		e_5.grid(row=8,column=1,sticky=tk.W)
+
+		# 访问按钮
+		b_open = self.create_button(self.tab_openurl,button_open,'Open')
+		b_open.grid(row=13,column=0,columnspan=4)	
 
 if __name__ == '__main__':
 	
