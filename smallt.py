@@ -283,7 +283,8 @@ class Root():
 									file_name = path + '/' + name
 								else:
 									file_name = path + name
-								command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								#command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
 								# command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
 								
 								try:
