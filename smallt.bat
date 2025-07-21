@@ -1,1 +1,1 @@
-start /b pythonw D:\GitFW\repositorys\PythonGUItest\smallt.py
+start /b pythonw D:\repositories\PythonGUI\smallt.py

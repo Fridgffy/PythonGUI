@@ -225,7 +225,7 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'45.76.153.21')
+			e_ip.insert(0,'45.77.242.219')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'31234')
 		def fkali():
@@ -233,9 +233,9 @@ class Root():
 			e_ip.insert(0,'192.168.19.130')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
-		def fkali3():
+		def fcentos():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.19.130')
+			e_ip.insert(0,'192.168.231.129')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 
@@ -244,7 +244,7 @@ class Root():
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'45.76.153.21')
+		e_ip.insert(0,'45.77.242.219')
 
 		# 设置端口
 		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
@@ -258,7 +258,7 @@ class Root():
 		b_vps = self.create_button(self.tab_scp,fvps,'VPS')
 		b_vps.grid(row=1,column=0,sticky=tk.W)
 
-		b_kali = self.create_button(self.tab_scp,fkali3,'KALI3')
+		b_kali = self.create_button(self.tab_scp,fcentos,'centos')
 		b_kali.grid(row=1,column=1,sticky=tk.W)
 
 		b_kali = self.create_button(self.tab_scp,fkali,'KALI')
