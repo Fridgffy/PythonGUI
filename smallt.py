@@ -326,7 +326,8 @@ class Root():
 										file_name = path + '/' + name
 									else:
 										file_name = path + name
-									command = 'scp -P {port} {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
+									#command = 'scp -P {port} {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
+									command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
 									try:
 										p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
 										stderr = p.stderr.read()
@@ -335,7 +336,7 @@ class Root():
 										else:
 											result = 'Upload success!'
 									except Exception as e:
-										result = e
+										result = e.encode('gbk')
 
 							self.display_result(result)
 						else:
