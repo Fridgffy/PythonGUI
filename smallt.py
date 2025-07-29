@@ -6,6 +6,7 @@ import pyperclip
 import requests
 import time
 import sys
+import paramiko
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -225,7 +226,7 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'45.77.242.219')
+			e_ip.insert(0,'139.180.156.169')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'31234')
 		def fkali():
@@ -239,12 +240,58 @@ class Root():
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 
+		# 使用paramiko实现文件下载
+		def get_file(host,port,remote,local,name):
+			try:
+				# command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+				private_key = paramiko.RSAKey.from_private_key_file("C:\\Users\\DC\\.ssh\\id_rsa")
+				ssh = paramiko.SSHClient()
+				ssh.load_host_keys("C:\\Users\\DC\\.ssh\\known_hosts")
+				ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+				ssh.connect(hostname=host,port=port,username='root',pkey=private_key)
+				sftp = ssh.open_sftp()
+				sftp.get(f'{remote}',f'{local}'+'/'+f'{name}')
+				result = 'Download success!'
+				# self.display_result(result)
+			except Exception as e:
+				# result = e
+				# self.display_result(result)
+				result = f'{host} {port} {remote} {local} {name}'
+			finally:
+				ssh.close()
+				sftp.close()
+			return result
+
+		# 使用paramiko实现文件上传
+		def put_file(host,port,local,remote,name):
+			try:
+				#command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
+				private_key = paramiko.RSAKey.from_private_key_file("C:\\Users\\DC\\.ssh\\id_rsa")
+				ssh = paramiko.SSHClient()
+				ssh.load_host_keys("C:\\Users\\DC\\.ssh\\known_hosts")
+				ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+				ssh.connect(hostname=host,port=port,username='root',pkey=private_key)
+				sftp = ssh.open_sftp()
+				sftp.put(f'{local}',f'{remote}'+'/'+f'{name}')
+				result = 'Upload success!'
+				
+			except Exception as e:
+				result = e
+				# result = f'{host} {port} {local} {remote} {name}'
+
+				# self.display_result(result)
+			finally:
+				ssh.close()
+				sftp.close()
+
+			return result
+
 		# 远程IP地址
 		l_ip = tk.Label(self.tab_scp,text='IP:',width=8,height=1,font=('Consolas','12'))
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'45.77.242.219')
+		e_ip.insert(0,'139.180.156.169')
 
 		# 设置端口
 		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
@@ -283,21 +330,21 @@ class Root():
 									file_name = path + '/' + name
 								else:
 									file_name = path + name
-								#command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
-								command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
-								# command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
-								
-								try:
-									p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-									stderr = p.stderr.read()
-									if stderr:
-										result = stderr.decode('gbk')
-										# result = command
-									else:
-										result = 'Download success!'
-								except Exception as e:
-									result = e
-							self.display_result(result)
+									#command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+									# command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+								result = get_file(e_ip.get(),e_port.get(),file_name,e_local_down.get(),name)
+								self.display_result(result)
+								# try:
+								# 	p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
+									# stderr = p.stderr.read()
+									# if stderr:
+										
+									# 	# result = command
+									# else:
+										
+								# except Exception as e:
+								# 	result = e
+							# self.display_result(result)
 						else:
 							self.display_result('Empty separator!')
 					else:
@@ -327,18 +374,20 @@ class Root():
 									else:
 										file_name = path + name
 									#command = 'scp -P {port} {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
-									command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
-									try:
-										p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-										stderr = p.stderr.read()
-										if stderr:
-											result = stderr
-										else:
-											result = 'Upload success!'
-									except Exception as e:
-										result = e.encode('gbk')
+									# command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
+									result = put_file(e_ip.get(),e_port.get(),file_name,e_remote_upload.get(),name)
+									self.display_result(result)
+									# try:
+									# 	p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
+									# 	stderr = p.stderr.read()
+									# 	if stderr:
+									# 		result = stderr
+									# 	else:
+									# 		result = 'Upload success!'
+									# except Exception as e:
+									# 	result = e.encode('gbk')
 
-							self.display_result(result)
+							# self.display_result(result)
 						else:
 							self.display_result('Need a remote path!')
 					else:
