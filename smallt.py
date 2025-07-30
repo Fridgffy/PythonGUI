@@ -243,7 +243,6 @@ class Root():
 		# 使用paramiko实现文件下载
 		def get_file(host,port,remote,local,name):
 			try:
-				# command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
 				private_key = paramiko.RSAKey.from_private_key_file("C:\\Users\\DC\\.ssh\\id_rsa")
 				ssh = paramiko.SSHClient()
 				ssh.load_host_keys("C:\\Users\\DC\\.ssh\\known_hosts")
@@ -265,7 +264,6 @@ class Root():
 		# 使用paramiko实现文件上传
 		def put_file(host,port,local,remote,name):
 			try:
-				#command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
 				private_key = paramiko.RSAKey.from_private_key_file("C:\\Users\\DC\\.ssh\\id_rsa")
 				ssh = paramiko.SSHClient()
 				ssh.load_host_keys("C:\\Users\\DC\\.ssh\\known_hosts")
@@ -277,9 +275,6 @@ class Root():
 				
 			except Exception as e:
 				result = e
-				# result = f'{host} {port} {local} {remote} {name}'
-
-				# self.display_result(result)
 			finally:
 				ssh.close()
 				sftp.close()
@@ -330,21 +325,10 @@ class Root():
 									file_name = path + '/' + name
 								else:
 									file_name = path + name
-									#command = 'scp -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
-									# command = 'scp -o "ProxyCommand D:\\Nmap-7.95\\Nmap\\ncat --proxy-type socks5 --proxy 127.0.0.1:7890 %h %p" -P {port} root@{ip}:{remote} {local}'.format(ip=e_ip.get(),remote=file_name,local=e_local_down.get(),port=e_port.get())
+
+								# 调用 get_file函数，实现scp
 								result = get_file(e_ip.get(),e_port.get(),file_name,e_local_down.get(),name)
 								self.display_result(result)
-								# try:
-								# 	p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-									# stderr = p.stderr.read()
-									# if stderr:
-										
-									# 	# result = command
-									# else:
-										
-								# except Exception as e:
-								# 	result = e
-							# self.display_result(result)
 						else:
 							self.display_result('Empty separator!')
 					else:
@@ -373,21 +357,11 @@ class Root():
 										file_name = path + '/' + name
 									else:
 										file_name = path + name
-									#command = 'scp -P {port} {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
-									# command = 'scp -P {port} -o ProxyCommand="D:\\Git\\mingw64\\bin\\connect.exe -S 127.0.0.1:7890 %h %p" {local} root@{ip}:{remote}'.format(local=file_name,ip=e_ip.get(),remote=e_remote_upload.get(),port=e_port.get())
+
+									# 调用 put_file函数，实现scp
 									result = put_file(e_ip.get(),e_port.get(),file_name,e_remote_upload.get(),name)
 									self.display_result(result)
-									# try:
-									# 	p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-									# 	stderr = p.stderr.read()
-									# 	if stderr:
-									# 		result = stderr
-									# 	else:
-									# 		result = 'Upload success!'
-									# except Exception as e:
-									# 	result = e.encode('gbk')
 
-							# self.display_result(result)
 						else:
 							self.display_result('Need a remote path!')
 					else:
@@ -785,25 +759,6 @@ class Root():
 		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
 		l_separator2.grid(row=5,column=0)
 
-		# # 输入框3
-		# l_input3 = self.create_label(self.tab_dealwith,"Input2:")
-		# l_input3.grid(row=6,column=0)
-
-		# e_input3 = self.create_entry(self.tab_dealwith,w=50)
-		# e_input3.grid(row=6,column=1)
-
-		# # 输入框2 说明
-		# l_input3_des = self.create_label(self.tab_dealwith,"Des:")
-		# l_input3_des.grid(row=6,column=2)
-
-		# e_input3_des = self.create_entry(self.tab_dealwith)
-		# e_input3_des.grid(row=6,column=3)
-
-		# e_input3_des.insert(0,'Not enabled')
-
-		# # 分隔符
-		# l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
-		# l_separator2.grid(row=7,column=0)
 
 		# 按钮1
 		b_1 = self.create_button(self.tab_dealwith,Bone,'Button1')
