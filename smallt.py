@@ -226,12 +226,12 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'139.180.156.169')
+			e_ip.insert(0,'207.148.123.125')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'31234')
 		def fkali():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.19.130')
+			e_ip.insert(0,'192.168.231.130')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 		def fcentos():
@@ -286,7 +286,7 @@ class Root():
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'139.180.156.169')
+		e_ip.insert(0,'207.148.123.125')
 
 		# 设置端口
 		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
@@ -327,7 +327,7 @@ class Root():
 									file_name = path + name
 
 								# 调用 get_file函数，实现scp
-								result = get_file(e_ip.get(),e_port.get(),file_name,e_local_down.get(),name)
+								result = get_file(e_ip.get(),e_port.get(),file_name.replace('~/','/root/').strip(),e_local_down.get().replace('~/','/root/').strip(),name.strip())
 								self.display_result(result)
 						else:
 							self.display_result('Empty separator!')
@@ -359,7 +359,7 @@ class Root():
 										file_name = path + name
 
 									# 调用 put_file函数，实现scp
-									result = put_file(e_ip.get(),e_port.get(),file_name,e_remote_upload.get(),name)
+									result = put_file(e_ip.get(),e_port.get(),file_name.replace('~/','/root/').strip(),e_remote_upload.get().replace('~/','/root/'),name.strip())
 									self.display_result(result)
 
 						else:
