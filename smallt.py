@@ -231,7 +231,7 @@ class Root():
 			e_port.insert(0,'31234')
 		def fkali():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.231.130')
+			e_ip.insert(0,'192.168.231.131')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 		def fcentos():
