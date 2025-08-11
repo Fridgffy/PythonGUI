@@ -24,6 +24,11 @@ class Root():
 		self.notebook.add(self.tab_scp,text="SCP    ")
 		self.create_scp()
 
+		# 创建标签页 Websites, batch access to url
+		self.tab_websites = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_websites,text="    Websites    ")
+		self.create_websites()
+
 		# 创建标签页 Open URL 自定义URL并且访问
 		self.tab_openurl = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_openurl,text="    Open URL    ")
@@ -34,10 +39,7 @@ class Root():
 		self.notebook.add(self.tab_replace,text="    Replace    ")
 		self.create_replace()
 
-		# 创建标签页pings
-		self.tab_pings = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_pings,text="    Pings    ")
-		self.create_pings()
+
 		
 		# 创建标签页URLTest
 		self.tab_urltest = ttk.Frame(self.notebook)
@@ -83,63 +85,52 @@ class Root():
 		e = tk.Entry(tab,show=None,width=w,font=('Consolas','12'))
 		return e
 
-##### 创建标签页pings
-	def display_pings(self,result):
-		# l_result = self.create_label(result)
-		l_result = tk.Label(self.tab_pings,text=result,font=('Consolas','12'),width=100,height=5)
+##### 创建标签页 Websites
+	def display_websites(self,result):
+		l_result = tk.Label(self.tab_websites,text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
-
-	def create_pings(self):
-		# ping按钮函数
-		def fping():
-			ips = t_input.get(0.0,tk.END)
-			self.display_pings('')
-			# 循环内容
-			for ip in ips.strip().split('\n'):
-				# 判断IP是否为空
-				if ip:
-					com = 'ping -n 2 -w 2 %s' %(ip)
-					try:
+	def create_websites(self):
+		# access button function 
+		def faccess():
+			urls = t_urls.get(0.0,tk.END)
+			for url in urls.strip().split('\n'):
+				try:
+					if url:
+						com = f'@start chrome {url.strip()}'
 						p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-						result = p.stdout.read().decode('gbk')
-					except Exception as e:
-						self.display_pings(e)
-
-					if not p.stderr.read():
-						if result and '32' in result:
-							t_output.insert('insert',ip)
-							t_output.insert('insert','\n')
-							self.display_pings('Pings Completed!')
-							# t_output.insert('insert','—————————————————————————————————————————————')
 					else:
-						self.display_pings(p.stderr.read())
-				else:
-					self.display_pings('Input ip or hostname!')
-		
+						pass
+				except Exception as e:
+					self.display_websites(str(e))
+
+			if p.stderr.read():
+				self.display_websites(p.stderr.read())
+			else:
+				self.display_websites('All URLs accessed')
+
 		# 清空按钮函数
-		def finputclean():
-			t_input.delete(0.0,tk.END)
-			self.display_pings('')
+		def fclean():
+			t_urls.delete(0.0,tk.END)
+			self.display_websites('')
 
-		def foutputclean():
-			t_output.delete(0.0,tk.END)
-			self.display_pings('')
+		l_description = self.create_label(self.tab_websites,'Access to websites.Pause access every N lines ->',w=65,h=1)
+		l_description.grid(row=0,column=0)
 
-		# 设置控件	
-		t_input = self.create_text(self.tab_pings,w=45,h=27)
-		t_input.grid(row=1,column=0,rowspan=2)
+		l_number = self.create_label(self.tab_websites,'Number:',w=10,h=1)
+		l_number.grid(row=0,column=1)
 
-		t_output = self.create_text(self.tab_pings,w=45,h=27)
-		t_output.grid(row=1,column=2,rowspan=2)
+		e_number = self.create_entry(self.tab_websites,w=10)
+		e_number.grid(row=0,column=2,sticky=tk.W)
 
-		b_ping = self.create_button(self.tab_pings,fping,'Ping')
-		b_ping.grid(row=1,column=1)
+		t_urls = self.create_text(self.tab_websites,w=85,h=27)
+		t_urls.grid(row=1,column=0,rowspan=4,columnspan=3)
 
-		b_clean_input = self.create_button(self.tab_pings,finputclean,'Clean')
-		b_clean_input.grid(row=0,column=0)
+		b_access = self.create_button(self.tab_websites,faccess,' Access ')
+		b_access.grid(row=2,column=3)
 
-		b_clean_output = self.create_button(self.tab_pings,foutputclean,'Clean')
-		b_clean_output.grid(row=0,column=2)
+		b_clean = self.create_button(self.tab_websites,fclean,' Clean ')
+		b_clean.grid(row=5,column=0)
+
 
 
 ##### 创建标签页replace
@@ -231,7 +222,7 @@ class Root():
 			e_port.insert(0,'31234')
 		def fkali():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'192.168.231.131')
+			e_ip.insert(0,'192.168.133.128')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'22')
 		def fcentos():
