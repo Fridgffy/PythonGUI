@@ -362,14 +362,14 @@ class Root():
 			else:
 				self.display_result('Remote IP is empty!')
 
-		# download clean button
-		def clean_download():
-			e_down_remote_file.delete(0,tk.END)
-			self.display_result('')
-		# upload clean button
-		def clean_upload():
-			e_upload_local_file.delete(0,tk.END)
-			self.display_result('')
+		# # download clean button
+		# def clean_download():
+		# 	e_down_remote_file.delete(0,tk.END)
+		# 	self.display_result('')
+		# # upload clean button
+		# def clean_upload():
+		# 	e_upload_local_file.delete(0,tk.END)
+		# 	self.display_result('')
 
 
 		# 分隔符
@@ -410,8 +410,8 @@ class Root():
 		
 		# clean按钮
 
-		b_down_clean = self.create_button(self.tab_scp,clean_download,'Clean')
-		b_down_clean.grid(row=7,column=4)
+		# b_down_clean = self.create_button(self.tab_scp,clean_download,'Clean')
+		# b_down_clean.grid(row=7,column=4)
 
 
 		# 分隔空间
@@ -449,8 +449,8 @@ class Root():
 		b_upload.grid(row=13,column=0,columnspan=4)		
 
 		# clean 按钮
-		b_upload_clean = self.create_button(self.tab_scp,clean_upload,'Clean')
-		b_upload_clean.grid(row=13,column=4)
+		# b_upload_clean = self.create_button(self.tab_scp,clean_upload,'Clean')
+		# b_upload_clean.grid(row=13,column=4)
 
 ##### 创建标签页URLTest
 	
