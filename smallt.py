@@ -396,7 +396,7 @@ class Root():
 		l_down_remote_path.grid(row=5,column=0,sticky=tk.W)
 		e_down_remote_path = self.create_entry(self.tab_scp,w=70)
 		e_down_remote_path.grid(row=5,column=1,columnspan=3,sticky=tk.W)
-		e_down_remote_path.insert(0,'/root/result')
+		e_down_remote_path.insert(0,'/root/workspace/')
 
 	
 		l_local_down = self.create_label(self.tab_scp,'Down_Local:',w=20,h=2)
