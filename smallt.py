@@ -254,7 +254,7 @@ class Root():
 	# 	self.display_result('')
 
 	# 结果显示
-	def display_result(self,result,tab_name):
+	def display_result(self,result):
 		l_result = tk.Label(self.tab_scp,text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
 
