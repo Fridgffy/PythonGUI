@@ -29,6 +29,13 @@ class Root():
 		self.notebook.add(self.tab_websites,text="    Websites    ")
 		self.create_websites()
 
+		# 创建标签页 httpx
+		self.tab_httpx = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_httpx,text="    httpx    ")
+		self.create_httpx()
+
+
+
 		# 创建标签页 Open URL 自定义URL并且访问
 		self.tab_openurl = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_openurl,text="    Open URL    ")
@@ -39,8 +46,6 @@ class Root():
 		self.notebook.add(self.tab_replace,text="    Replace    ")
 		self.create_replace()
 
-
-		
 		# 创建标签页URLTest
 		self.tab_urltest = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_urltest,text="    URLTest    ")
@@ -132,6 +137,58 @@ class Root():
 		b_clean.grid(row=5,column=0)
 
 
+##### create tab httpx
+	def display_httpx(self,result):
+		l_result = tk.Label(self.tab_httpx,text=result,font=('Consolas','12'),width=100,height=5)
+		l_result.grid(row=30,column=0,columnspan=10)
+
+	def create_httpx(self):
+		def fprocess():
+			try:
+				alive_file = e_read.get()
+				alive_httpx = e_write.get()
+
+				with open(alive_file, 'r') as f_read:
+					with open(alive_httpx, 'w+') as f_write:
+						for domain in f_read:
+							http_ports = [80,81,3128,8000,8001,8080,8081,8088,8880,8888,8090,3128,9898,9900,9998,9999,18080,18081] # 18
+							https_ports = [443,453,1443,4243,4443,8834,8443,9443,12443] # 9
+
+							for port in http_ports:
+								url = 'http://' + domain.strip() + ':' + str(port)
+								f_write.write(url)
+								f_write.write('\n')
+
+							for port in https_ports:
+								url = 'https://' + domain.strip() + ':' + str(port)
+								f_write.write(url)
+								f_write.write('\n')
+						self.display_httpx('Success, write in file alive_httpx')
+			except Exception as e:
+				self.display_httpx(str(e))
+
+		l_description = self.create_label(self.tab_httpx, 'Process file alive to alive_httpx',w=65,h=1)
+		l_description.grid(row=0, column=0, columnspan=2)
+
+		l_read = self.create_label(self.tab_httpx,'File_read:',w=10,h=1)
+		l_read.grid(row=1,column=0)
+		e_read = self.create_entry(self.tab_httpx, w=55)
+		e_read.grid(row=1, column=1)
+		e_read.insert(0,'C:\\Users\\DC\\Desktop\\alive')
+
+		l_write = self.create_label(self.tab_httpx,'File_write:',w=10,h=1)
+		l_write.grid(row=2,column=0)
+		e_write = self.create_entry(self.tab_httpx, w=55)
+		e_write.grid(row=2, column=1)
+		e_write.insert(0, 'C:\\Users\\DC\\Desktop\\alive_httpx')
+
+		b_process = self.create_button(self.tab_httpx, fprocess, ' Process ')
+		b_process.grid(row=3, column=0, columnspan=2)
+
+
+
+
+
 
 ##### 创建标签页replace
 
@@ -197,8 +254,7 @@ class Root():
 	# 	self.display_result('')
 
 	# 结果显示
-	def display_result(self,result):
-		# l_result = self.create_label(result)
+	def display_result(self,result,tab_name):
 		l_result = tk.Label(self.tab_scp,text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
 
