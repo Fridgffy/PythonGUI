@@ -7,6 +7,7 @@ import requests
 import time
 import sys
 import paramiko
+import csv
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -143,6 +144,21 @@ class Root():
 		l_result.grid(row=30,column=0,columnspan=10)
 
 	def create_httpx(self):
+		def frewrite():
+			try:
+				old_httpx = e_old_httpx.get()
+				new_httpx = e_new_httpx.get()
+
+				with open(old_httpx,'r', encoding='utf-8-sig') as old:
+					with open(new_httpx,'w+', newline='', encoding='utf-8-sig') as new:
+						old_file = csv.reader(old)
+						new_file = csv.writer(new)
+						for row in old_file:
+							new_file.writerow(row)
+				self.display_httpx('Rewrite completed')
+			except Exception as e:
+				self.display_httpx(str(e))
+
 		def fprocess():
 			try:
 				alive_file = e_read.get()
@@ -166,17 +182,17 @@ class Root():
 						self.display_httpx('Success, write in file alive_httpx')
 			except Exception as e:
 				self.display_httpx(str(e))
-
+		# process file data
 		l_description = self.create_label(self.tab_httpx, 'Process file alive to alive_httpx',w=65,h=1)
 		l_description.grid(row=0, column=0, columnspan=2)
 
-		l_read = self.create_label(self.tab_httpx,'File_read:',w=10,h=1)
+		l_read = self.create_label(self.tab_httpx,'File_read:',w=15,h=1)
 		l_read.grid(row=1,column=0)
 		e_read = self.create_entry(self.tab_httpx, w=55)
 		e_read.grid(row=1, column=1)
 		e_read.insert(0,'C:\\Users\\DC\\Desktop\\alive')
 
-		l_write = self.create_label(self.tab_httpx,'File_write:',w=10,h=1)
+		l_write = self.create_label(self.tab_httpx,'File_write:',w=15,h=1)
 		l_write.grid(row=2,column=0)
 		e_write = self.create_entry(self.tab_httpx, w=55)
 		e_write.grid(row=2, column=1)
@@ -184,10 +200,26 @@ class Root():
 
 		b_process = self.create_button(self.tab_httpx, fprocess, ' Process ')
 		b_process.grid(row=3, column=0, columnspan=2)
+		# delimiter
+		l_delimiter = self.create_label(self.tab_httpx, ' '*100,w=65,h=1)
+		# rewrite httpx.csv
+		l_description_rewrite = self.create_label(self.tab_httpx, 'Rewrite httpx.csv to httpx_new.csv',w=65,h=1)
+		l_description_rewrite.grid(row=4,column=0,columnspan=2)
 
+		l_old_httpx = self.create_label(self.tab_httpx,'Old_httpxfile:',w=15,h=1)
+		l_old_httpx.grid(row=5,column=0)
+		e_old_httpx = self.create_entry(self.tab_httpx, w=55)
+		e_old_httpx.grid(row=5, column=1)
+		e_old_httpx.insert(0,'C:\\Users\\DC\\Desktop\\httpx.csv')
 
+		l_new_httpx = self.create_label(self.tab_httpx,'New_httpxfile:',w=15,h=1)
+		l_new_httpx.grid(row=6,column=0)
+		e_new_httpx = self.create_entry(self.tab_httpx, w=55)
+		e_new_httpx.grid(row=6, column=1)
+		e_new_httpx.insert(0,'C:\\Users\\DC\\Desktop\\httpx_new.csv')
 
-
+		b_rewrite = self.create_button(self.tab_httpx, frewrite, ' Rewrite ')
+		b_rewrite.grid(row=7,column=0,columnspan=2)
 
 
 ##### 创建标签页replace
