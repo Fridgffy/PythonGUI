@@ -305,7 +305,7 @@ class Root():
 		# vps/kali3按钮函数
 		def fvps():
 			e_ip.delete(0,tk.END)
-			e_ip.insert(0,'207.148.123.125')
+			e_ip.insert(0,'45.77.34.43')
 			e_port.delete(0,tk.END)
 			e_port.insert(0,'31234')
 		def fkali():
@@ -365,7 +365,7 @@ class Root():
 		l_ip.grid(row=0,column=0,sticky=tk.W)
 		e_ip = self.create_entry(self.tab_scp,w=20)
 		e_ip.grid(row=0,column=1,sticky=tk.W)
-		e_ip.insert(0,'207.148.123.125')
+		e_ip.insert(0,'45.77.34.43')
 
 		# 设置端口
 		l_port = tk.Label(self.tab_scp,text='Port:',width=8,height=1,font=('Consolas','12'))
