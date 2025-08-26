@@ -8,6 +8,8 @@ import time
 import sys
 import paramiko
 import csv
+import re
+import os
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -141,13 +143,81 @@ class Root():
 		b_clean.grid(row=5,column=0)
 
 ##### create tab memo
+	def display_memo(self,result):
+		l_result = tk.Label(self.tab_memo,text=result,font=('Consolas','12'),width=100,height=5)
+		l_result.grid(row=30,column=0,columnspan=10)
+
 	def create_memo(self):
-		content = r'''
-\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}
-		'''
-		t_memo = self.create_text(self.tab_memo,w=100,h=35)
-		t_memo.grid(row=0, column=0)
+		try:
+			file_path = './Memo'
+			tmp_file = './tmp'
+			with open(file_path, 'r') as f:
+				content = f.read()
+			self.display_memo('Read completed')
+		except Exception as e:
+			self.display_memo(str(e))
+		def fupdate():
+			try:
+				t_memo.delete("1.0", 'end')
+				with open(file_path, 'r+') as f:
+					content = f.read()
+					t_memo.insert("1.0", content.strip())
+				self.display_memo('Update Successfully')
+			except Exception as e:
+				self.display_memo(str(e))
+		
+		def finsert():
+			try:
+				content = e_insert.get()
+				with open(file_path, 'a+') as f:
+					f.write('\n')
+					f.write(content.strip())
+				fupdate()
+				self.display_memo('Insert Successfully')
+			except Exception as e:
+				self.display_memo(str(e))
+
+		def fdelete():
+			try:
+				delete_content = e_delete.get()
+
+				with open(file_path, 'r') as f:
+					with open(tmp_file, 'w') as f_write:
+						for line in f:
+							if not re.search(r'^\s*$', line.strip()):
+								if not line.strip() == delete_content.strip():
+									f_write.write(line.strip())
+									f_write.write('\n')
+				os.replace(tmp_file, file_path)
+				fupdate()
+				self.display_memo('Delete Successfully')
+			except Exception as e:
+				self.display_memo(str(e))
+
+		
+
+		l_description = self.create_label(self.tab_memo,'Read the contents of the file Memo',w=100,h=1)
+		l_description.grid(row=0,column=0, columnspan=3)
+
+		e_insert = self.create_entry(self.tab_memo,w=90)
+		e_insert.grid(row=1, column=0)
+		b_insert = self.create_button(self.tab_memo, finsert, ' Insert ')
+		b_insert.grid(row=1, column=1)
+
+		e_delete = self.create_entry(self.tab_memo,w=90)
+		e_delete.grid(row=2, column=0)
+		b_delete = self.create_button(self.tab_memo, fdelete, ' Delete ')
+		b_delete.grid(row=2, column=1)
+
+		b_update = self.create_button(self.tab_memo, fupdate, ' Update ')
+		b_update.grid(row=3, column=0, columnspan=3)
+
+		t_memo = self.create_text(self.tab_memo,w=100,h=25)
+		t_memo.grid(row=4, column=0, columnspan=3)
 		t_memo.insert("1.0", content.strip())
+
+		
+		
 
 ##### create tab httpx
 	def display_httpx(self,result):
