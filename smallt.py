@@ -151,16 +151,30 @@ class Root():
 		try:
 			file_path = './Memo'
 			tmp_file = './tmp'
+			if not os.path.exists(file_path):
+				display_memo(f'{file_path} not exists')
+
 			with open(file_path, 'r') as f:
 				content = f.read()
 			self.display_memo('Read completed')
 		except Exception as e:
 			self.display_memo(str(e))
+
+		def finsert_all():
+			try:
+				text_content = t_memo.get(0.0, tk.END)
+				with open(file_path, 'w') as f:
+					f.write(text_content)
+
+				fupdate()
+			except Exception as e:
+				self.display_memo(str(e))
+
 		def fupdate():
 			try:
 				t_memo.delete("1.0", 'end')
-				with open(file_path, 'r+') as f:
-					content = f.read()
+				with open(file_path, 'r+') as f2:
+					content = f2.read()
 					t_memo.insert("1.0", content.strip())
 				self.display_memo('Update Successfully')
 			except Exception as e:
@@ -169,9 +183,9 @@ class Root():
 		def finsert():
 			try:
 				content = e_insert.get()
-				with open(file_path, 'a+') as f:
+				with open(file_path, 'a') as f:
 					f.write('\n')
-					f.write(content.strip())
+					f.write(re.sub(r'^\s*$','', content.strip(), flags=re.MULTILINE))
 				fupdate()
 				self.display_memo('Insert Successfully')
 			except Exception as e:
@@ -209,11 +223,11 @@ class Root():
 		b_delete = self.create_button(self.tab_memo, fdelete, ' Delete ')
 		b_delete.grid(row=2, column=1)
 
-		b_update = self.create_button(self.tab_memo, fupdate, ' Update ')
-		b_update.grid(row=3, column=0, columnspan=3)
+		b_update = self.create_button(self.tab_memo, finsert_all, ' Update ')
+		b_update.grid(row=4, column=0, columnspan=3)
 
 		t_memo = self.create_text(self.tab_memo,w=100,h=25)
-		t_memo.grid(row=4, column=0, columnspan=3)
+		t_memo.grid(row=3, column=0, columnspan=3)
 		t_memo.insert("1.0", content.strip())
 
 		
