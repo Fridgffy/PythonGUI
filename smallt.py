@@ -166,11 +166,11 @@ class Root():
 				with open(file_path, 'w') as f:
 					f.write(text_content)
 
-				fupdate()
+				freload()
 			except Exception as e:
 				self.display_memo(str(e))
 
-		def fupdate():
+		def freload():
 			try:
 				t_memo.delete("1.0", 'end')
 				with open(file_path, 'r+') as f2:
@@ -186,7 +186,8 @@ class Root():
 				with open(file_path, 'a') as f:
 					f.write('\n')
 					f.write(re.sub(r'^\s*$','', content.strip(), flags=re.MULTILINE))
-				fupdate()
+				e_insert.delete(0, tk.END)
+				freload()
 				self.display_memo('Insert Successfully')
 			except Exception as e:
 				self.display_memo(str(e))
@@ -203,7 +204,8 @@ class Root():
 									f_write.write(line.strip())
 									f_write.write('\n')
 				os.replace(tmp_file, file_path)
-				fupdate()
+				e_delete.delete(0, tk.END)
+				freload()
 				self.display_memo('Delete Successfully')
 			except Exception as e:
 				self.display_memo(str(e))
@@ -223,12 +225,17 @@ class Root():
 		b_delete = self.create_button(self.tab_memo, fdelete, ' Delete ')
 		b_delete.grid(row=2, column=1)
 
-		b_update = self.create_button(self.tab_memo, finsert_all, ' Update ')
-		b_update.grid(row=4, column=0, columnspan=3)
-
 		t_memo = self.create_text(self.tab_memo,w=100,h=25)
 		t_memo.grid(row=3, column=0, columnspan=3)
 		t_memo.insert("1.0", content.strip())
+
+		b_update = self.create_button(self.tab_memo, finsert_all, ' Save ')
+		b_update.grid(row=4, column=0, sticky=tk.W)
+
+		b_reload = self.create_button(self.tab_memo, freload, ' Reload ')
+		b_reload.grid(row=4, column=1)
+
+		
 
 		
 		
