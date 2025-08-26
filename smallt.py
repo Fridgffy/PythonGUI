@@ -24,7 +24,7 @@ class Root():
 
 		# Create tabscp
 		self.tab_scp = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_scp,text="SCP    ")
+		self.notebook.add(self.tab_scp,text="    SCP    ")
 		self.create_scp()
 
 		# Create tab Websites, batch access to url
@@ -160,35 +160,40 @@ class Root():
 		except Exception as e:
 			self.display_memo(str(e))
 
-		def finsert_all():
-			try:
-				text_content = t_memo.get(0.0, tk.END)
-				with open(file_path, 'w') as f:
-					f.write(text_content)
-
-				freload()
-			except Exception as e:
-				self.display_memo(str(e))
-
 		def freload():
 			try:
 				t_memo.delete("1.0", 'end')
 				with open(file_path, 'r+') as f2:
 					content = f2.read()
 					t_memo.insert("1.0", content.strip())
-				self.display_memo('Update Successfully')
+				self.display_memo('Reload Successfully')
 			except Exception as e:
 				self.display_memo(str(e))
 		
+		def fsave():
+			try:
+				text_content = t_memo.get(0.0, tk.END)
+				with open(file_path, 'w') as f:
+					f.write(text_content)
+
+				freload()
+				self.display_memo('Save Successfully')
+			except Exception as e:
+				self.display_memo(str(e))
+
+	
 		def finsert():
 			try:
-				content = e_insert.get()
-				with open(file_path, 'a') as f:
-					f.write('\n')
-					f.write(re.sub(r'^\s*$','', content.strip(), flags=re.MULTILINE))
-				e_insert.delete(0, tk.END)
-				freload()
-				self.display_memo('Insert Successfully')
+				content = e_insert.get().strip().replace('\n','')
+				if content:
+					with open(file_path, 'a') as f:
+						f.write('\n')
+						f.write(re.sub(r'^\s*$','', content.strip().replace('\n',''), flags=re.MULTILINE))
+					e_insert.delete(0, tk.END)
+					freload()
+					self.display_memo('Insert Successfully')
+				else:
+					pass
 			except Exception as e:
 				self.display_memo(str(e))
 
@@ -229,7 +234,7 @@ class Root():
 		t_memo.grid(row=3, column=0, columnspan=3)
 		t_memo.insert("1.0", content.strip())
 
-		b_update = self.create_button(self.tab_memo, finsert_all, ' Save ')
+		b_update = self.create_button(self.tab_memo, fsave, ' Save ')
 		b_update.grid(row=4, column=0, sticky=tk.W)
 
 		b_reload = self.create_button(self.tab_memo, freload, ' Reload ')
