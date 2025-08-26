@@ -15,7 +15,6 @@ import os
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class Root():
-	# 构造函数
 	def __init__(self,window):
 		self.window = window
 		self.set_window()
@@ -27,22 +26,28 @@ class Root():
 		self.notebook.add(self.tab_scp,text="    SCP    ")
 		self.create_scp()
 
-		# Create tab Websites, batch access to url
-		self.tab_websites = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_websites,text="    Websites    ")
-		self.create_websites()
-
-		# Create tab httpx
-		self.tab_httpx = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_httpx,text="    httpx    ")
-		self.create_httpx()
-
 		# Create tab memo
 		self.tab_memo = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_memo,text="    Memo    ")
 		self.create_memo()
 
-		# Create tab Open URL 自定义URL并且访问
+		# Create tab subfile
+		self.tab_subfile = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_subfile,text="    Subfile    ")
+		self.create_subfile()
+
+		# Create tab Extarct
+		self.tab_extract = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_extract,text="    Extract    ")
+		self.create_extract()
+
+
+		# Create tab Websites: batch access to url
+		self.tab_websites = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_websites,text="    Websites    ")
+		self.create_websites()
+
+		# Create tab Open URL
 		self.tab_openurl = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_openurl,text="    Open URL    ")
 		self.create_openurl()
@@ -62,15 +67,13 @@ class Root():
 		self.notebook.add(self.tab_dealwith,text="    Deal with URL    ")
 		self.create_dealwith()
 
-
-
 		self.notebook.pack()
 	
 	# 主面板大小设置
 	def set_window(self):
 		self.window.title('SmallTools')
 		width = 930
-		height = 700
+		height = 730
 		screenwidth = self.window.winfo_screenwidth()
 		screenheight = self.window.winfo_screenheight()
 		size_geo = '%dx%d+%d+%d' % (width, height, (screenwidth-width)/2, (screenheight-height)/2)
@@ -96,10 +99,12 @@ class Root():
 		e = tk.Entry(tab,show=None,width=w,font=('Consolas','12'))
 		return e
 
-##### Create tab Websites
-	def display_websites(self,result):
-		l_result = tk.Label(self.tab_websites,text=result,font=('Consolas','12'),width=100,height=5)
+	# result display
+	def display_results(self,tab,result):
+		l_result = tk.Label(tab, text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
+
+##### Create tab Websites
 	def create_websites(self):
 		# access button function 
 		def faccess():
@@ -112,17 +117,17 @@ class Root():
 					else:
 						pass
 				except Exception as e:
-					self.display_websites(str(e))
+					self.display_results(self.tab_websites, str(e))
 
 			if p.stderr.read():
-				self.display_websites(p.stderr.read())
+				self.display_results(self.tab_websites, p.stderr.read())
 			else:
-				self.display_websites('All URLs accessed')
+				self.display_results(self.tab_websites, 'All URLs accessed')
 
 		# 清空按钮函数
 		def fclean():
 			t_urls.delete(0.0,tk.END)
-			self.display_websites('')
+			self.display_results(self.tab_websites, '')
 
 		l_description = self.create_label(self.tab_websites,'Access to websites.Pause access every N lines ->',w=65,h=1)
 		l_description.grid(row=0,column=0)
@@ -143,22 +148,18 @@ class Root():
 		b_clean.grid(row=5,column=0)
 
 ##### create tab memo
-	def display_memo(self,result):
-		l_result = tk.Label(self.tab_memo,text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=30,column=0,columnspan=10)
-
 	def create_memo(self):
 		try:
 			file_path = './Memo'
 			tmp_file = './tmp'
 			if not os.path.exists(file_path):
-				display_memo(f'{file_path} not exists')
+				self.display_results(self.tab_memo, f'{file_path} not exists')
 
 			with open(file_path, 'r') as f:
 				content = f.read()
-			self.display_memo('Read completed')
+			self.display_results(self.tab_memo, 'Read completed')
 		except Exception as e:
-			self.display_memo(str(e))
+			self.display_results(self.tab_memo, str(e))
 
 		def freload():
 			try:
@@ -166,9 +167,9 @@ class Root():
 				with open(file_path, 'r+') as f2:
 					content = f2.read()
 					t_memo.insert("1.0", content.strip())
-				self.display_memo('Reload Successfully')
+				self.display_results(self.tab_memo, 'Reload Successfully')
 			except Exception as e:
-				self.display_memo(str(e))
+				self.display_results(self.tab_memo, str(e))
 		
 		def fsave():
 			try:
@@ -177,9 +178,9 @@ class Root():
 					f.write(text_content)
 
 				freload()
-				self.display_memo('Save Successfully')
+				self.display_results(self.tab_memo, 'Save Successfully')
 			except Exception as e:
-				self.display_memo(str(e))
+				self.display_results(self.tab_memo, str(e))
 
 	
 		def finsert():
@@ -191,11 +192,11 @@ class Root():
 						f.write(re.sub(r'^\s*$','', content.strip().replace('\n',''), flags=re.MULTILINE))
 					e_insert.delete(0, tk.END)
 					freload()
-					self.display_memo('Insert Successfully')
+					self.display_results(self.tab_memo, 'Insert Successfully')
 				else:
 					pass
 			except Exception as e:
-				self.display_memo(str(e))
+				self.display_results(self.tab_memo, str(e))
 
 		def fdelete():
 			try:
@@ -211,9 +212,9 @@ class Root():
 				os.replace(tmp_file, file_path)
 				e_delete.delete(0, tk.END)
 				freload()
-				self.display_memo('Delete Successfully')
+				self.display_results(self.tab_memo, 'Delete Successfully')
 			except Exception as e:
-				self.display_memo(str(e))
+				self.display_results(self.tab_memo, str(e))
 
 		
 
@@ -240,17 +241,8 @@ class Root():
 		b_reload = self.create_button(self.tab_memo, freload, ' Reload ')
 		b_reload.grid(row=4, column=1)
 
-		
-
-		
-		
-
-##### create tab httpx
-	def display_httpx(self,result):
-		l_result = tk.Label(self.tab_httpx,text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=30,column=0,columnspan=10)
-
-	def create_httpx(self):
+##### create tab Subfile
+	def create_subfile(self):
 		def frewrite():
 			try:
 				old_httpx = e_old_httpx.get()
@@ -262,9 +254,9 @@ class Root():
 						new_file = csv.writer(new)
 						for row in old_file:
 							new_file.writerow(row)
-				self.display_httpx('Rewrite completed')
+				self.display_results(self.tab_subfile, 'Rewrite completed')
 			except Exception as e:
-				self.display_httpx(str(e))
+				self.display_results(self.tab_subfile, str(e))
 
 		def fprocess():
 			try:
@@ -286,50 +278,112 @@ class Root():
 								url = 'https://' + domain.strip() + ':' + str(port)
 								f_write.write(url)
 								f_write.write('\n')
-						self.display_httpx('Success, write in file alive_httpx')
+						self.display_results(self.tab_subfile, 'Success, write in file alive_httpx')
 			except Exception as e:
-				self.display_httpx(str(e))
+				self.display_results(self.tab_subfile, str(e))
+		def fsecond():
+			pass
 		# process file data
-		l_description = self.create_label(self.tab_httpx, 'Process file alive to alive_httpx',w=65,h=1)
-		l_description.grid(row=0, column=0, columnspan=2)
+		l_description = self.create_label(self.tab_subfile, 'Process dnsx output file <alive> to <alive_httpx>: add protocal and port',w=100,h=1)
+		l_description.grid(row=0, column=0, columnspan=5)
 
-		l_read = self.create_label(self.tab_httpx,'File_read:',w=15,h=1)
+		l_read = self.create_label(self.tab_subfile,'File_read:',w=15,h=1)
 		l_read.grid(row=1,column=0)
-		e_read = self.create_entry(self.tab_httpx, w=55)
+		e_read = self.create_entry(self.tab_subfile, w=55)
 		e_read.grid(row=1, column=1)
 		e_read.insert(0,'C:\\Users\\DC\\Desktop\\alive')
 
-		l_write = self.create_label(self.tab_httpx,'File_write:',w=15,h=1)
+		l_write = self.create_label(self.tab_subfile,'File_write:',w=15,h=1)
 		l_write.grid(row=2,column=0)
-		e_write = self.create_entry(self.tab_httpx, w=55)
+		e_write = self.create_entry(self.tab_subfile, w=55)
 		e_write.grid(row=2, column=1)
 		e_write.insert(0, 'C:\\Users\\DC\\Desktop\\alive_httpx')
 
-		b_process = self.create_button(self.tab_httpx, fprocess, ' Process ')
+		b_process = self.create_button(self.tab_subfile, fprocess, ' Process ')
 		b_process.grid(row=3, column=0, columnspan=2)
-		# delimiter
-		l_delimiter = self.create_label(self.tab_httpx, ' '*100,w=65,h=1)
+		# separator
+		l_separator_label = tk.Label(self.tab_scp,text='',font=('Consolas','12'),width=15,height=1)
+		l_separator_label.grid(row=4,column=0, columnspan=10)	
 		# rewrite httpx.csv
-		l_description_rewrite = self.create_label(self.tab_httpx, 'Rewrite httpx.csv to httpx_new.csv',w=65,h=1)
-		l_description_rewrite.grid(row=4,column=0,columnspan=2)
+		l_description_rewrite = self.create_label(self.tab_subfile, 'Rewrite httpx.csv to httpx_new.csv: to solve the problem of 中文 being display as ?',w=100,h=1)
+		l_description_rewrite.grid(row=5,column=0,columnspan=5)
 
-		l_old_httpx = self.create_label(self.tab_httpx,'Old_httpxfile:',w=15,h=1)
-		l_old_httpx.grid(row=5,column=0)
-		e_old_httpx = self.create_entry(self.tab_httpx, w=55)
-		e_old_httpx.grid(row=5, column=1)
+		l_old_httpx = self.create_label(self.tab_subfile,'Old_httpxfile:',w=15,h=1)
+		l_old_httpx.grid(row=6,column=0)
+		e_old_httpx = self.create_entry(self.tab_subfile, w=55)
+		e_old_httpx.grid(row=6, column=1)
 		e_old_httpx.insert(0,'C:\\Users\\DC\\Desktop\\httpx.csv')
 
-		l_new_httpx = self.create_label(self.tab_httpx,'New_httpxfile:',w=15,h=1)
-		l_new_httpx.grid(row=6,column=0)
-		e_new_httpx = self.create_entry(self.tab_httpx, w=55)
-		e_new_httpx.grid(row=6, column=1)
+		l_new_httpx = self.create_label(self.tab_subfile,'New_httpxfile:',w=15,h=1)
+		l_new_httpx.grid(row=7,column=0)
+		e_new_httpx = self.create_entry(self.tab_subfile, w=55)
+		e_new_httpx.grid(row=7, column=1)
 		e_new_httpx.insert(0,'C:\\Users\\DC\\Desktop\\httpx_new.csv')
 
-		b_rewrite = self.create_button(self.tab_httpx, frewrite, ' Rewrite ')
-		b_rewrite.grid(row=7,column=0,columnspan=2)
+		b_rewrite = self.create_button(self.tab_subfile, frewrite, ' Rewrite ')
+		b_rewrite.grid(row=8,column=0,columnspan=2)
 
+##### create tab Extract
+	def create_extract(self):
+		def fclear():
+			t_result.delete('1.0','end')
 
-##### Create tabreplace
+		def fextract():
+			try:
+				t_result.delete('1.0','end')
+				pattern = e_pattern.get()
+				file = e_file.get()
+				reo = re.compile(pattern, re.I)
+				with open(file, 'r') as f:
+					content = f.read()
+					all_content = reo.findall(content)
+					t_result.insert('1.0', '\n'.join(all_content))
+				self.display_results(self.tab_extract, 'Extracting completed')
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
+
+		def fdeduplication():
+			try:
+				t_result.delete('1.0','end')
+				pattern = e_pattern.get()
+				file = e_file.get()
+				reo = re.compile(pattern, re.I)
+				with open(file, 'r') as f:
+					content = f.read()
+					all_content = reo.findall(content)
+					t_result.insert('1.0', '\n'.join(set(all_content)))
+				self.display_results(self.tab_extract, 'Extracting completed')
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
+
+		l_description = self.create_label(self.tab_extract, 'Extracting data from the file using regular expressions', w=100, h=1)
+		l_description.grid(row=0, column=0, columnspan=5)
+
+		l_pattern = self.create_label(self.tab_extract, 'Pattern:',w=15,h=1)
+		l_pattern.grid(row=1, column=0)
+		e_pattern = self.create_entry(self.tab_extract, w=75)
+		e_pattern.grid(row=1, column=1)
+
+		l_file = self.create_label(self.tab_extract,'File:',w=15,h=1)
+		l_file.grid(row=2, column=0)
+
+		e_file = self.create_entry(self.tab_extract, w=75)
+		e_file.grid(row=2, column=1)
+		e_file.insert(0, 'C:\\Users\\DC\\Desktop\\')
+
+		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
+		b_extract.grid(row=3, column=0, columnspan=4)
+
+		t_result = self.create_text(self.tab_extract,w=90,h=25)
+		t_result.grid(row=4, column=0, columnspan=4)
+
+		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
+		b_clear.grid(row=5, column=0, sticky=tk.W)
+
+		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
+		b_deduplication.grid(row=5,column=1)
+
+##### Create tab replace
 
 	def create_replace(self):
 		# 替换按钮函数
@@ -379,33 +433,23 @@ class Root():
 		t_output = self.create_text(self.tab_replace,90,15)
 		t_output.grid(row=2,column=0,columnspan=4)
 
-		# b_output_clean = self.create_button(self.tab_replace,foutputclean,'Clean')
-		# b_output_clean.grid(row=2,column=4)
-
 		b_copy = self.create_button(self.tab_replace,fcopy,'Copy')
 		b_copy.grid(row=2,column=4)
 
 
-##### Create tabscp
-
-	# # 输入框绑定的事件
-	# def clean(self,display_result):
-	# 	self.display_result('')
-
-	# 结果显示
-	def display_result(self,result):
-		l_result = tk.Label(self.tab_scp,text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=30,column=0,columnspan=10)
-
+##### Create tab scp
 	# 判断IP是否存活
 	def test_ip(self,ip):
-		command = 'ping -n 2 -w 2 {}'.format(ip)
-		p = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
-		stdout = p.stdout.read().decode('gbk')
-		if 'TTL' in stdout:
-			return True
-		else:
-			return False
+		try:
+			command = 'ping -n 2 -w 2 {}'.format(ip)
+			p = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
+			stdout = p.stdout.read().decode('gbk')
+			if 'TTL' in stdout:
+				return True
+			else:
+				return False
+		except Exception as e:
+			self.display_results(self.tab_scp, str(e))
 	# 标签页scp
 	def create_scp(self):
 		result = None
@@ -437,10 +481,7 @@ class Root():
 				sftp = ssh.open_sftp()
 				sftp.get(f'{remote}',f'{local}'+'/'+f'{name}')
 				result = 'Download success!'
-				# self.display_result(result)
 			except Exception as e:
-				# result = e
-				# self.display_result(result)
 				result = f'{host} {port} {remote} {local} {name}'
 			finally:
 				ssh.close()
@@ -514,15 +555,15 @@ class Root():
 
 								# 调用 get_file函数，实现scp
 								result = get_file(e_ip.get(),e_port.get(),file_name.replace('~/','/root/').strip(),e_local_down.get().replace('~/','/root/').strip(),name.strip())
-								self.display_result(result)
+								self.display_results(self.tab_scp, result)
 						else:
-							self.display_result('Empty separator!')
+							self.display_results(self.tab_scp,'Empty separator!')
 					else:
-						self.display_result('Need path/file!')
+						self.display_results(self.tab_scp,'Need path/file!')
 				else:
-					self.display_result('Remote Ip dose not alive!')
+					self.display_results(self.tab_scp,'Remote Ip dose not alive!')
 			else:
-				self.display_result('Remote IP is empty!')
+				self.display_results(self.tab_scp,'Remote IP is empty!')
 
 		def button_upload():
 			# 是否写入IP地址
@@ -546,26 +587,16 @@ class Root():
 
 									# 调用 put_file函数，实现scp
 									result = put_file(e_ip.get(),e_port.get(),file_name.replace('~/','/root/').strip(),e_remote_upload.get().replace('~/','/root/'),name.strip())
-									self.display_result(result)
+									self.display_results(self.tab_scp,result)
 
 						else:
-							self.display_result('Need a remote path!')
+							self.display_results(self.tab_scp,'Need a remote path!')
 					else:
-						self.display_result('Need a local file!')
+						self.display_results(self.tab_scp,'Need a local file!')
 				else:
-					self.display_result('Remote Ip dose not alive!')
+					self.display_results(self.tab_scp,'Remote Ip dose not alive!')
 			else:
-				self.display_result('Remote IP is empty!')
-
-		# # download clean button
-		# def clean_download():
-		# 	e_down_remote_file.delete(0,tk.END)
-		# 	self.display_result('')
-		# # upload clean button
-		# def clean_upload():
-		# 	e_upload_local_file.delete(0,tk.END)
-		# 	self.display_result('')
-
+				self.display_results(self.tab_scp,'Remote IP is empty!')
 
 		# 分隔符
 		l_separator_ = tk.Label(self.tab_scp,text='—'*75,height=1)
@@ -603,12 +634,6 @@ class Root():
 		b_download = self.create_button(self.tab_scp,button_download,'Download')
 		b_download.grid(row=7,column=0,columnspan=4)
 		
-		# clean按钮
-
-		# b_down_clean = self.create_button(self.tab_scp,clean_download,'Clean')
-		# b_down_clean.grid(row=7,column=4)
-
-
 		# 分隔空间
 		l_separator_label = tk.Label(self.tab_scp,text='',font=('Consolas','12'),width=15,height=1)
 		l_separator_label.grid(row=8,column=0)
@@ -643,47 +668,36 @@ class Root():
 		b_upload = self.create_button(self.tab_scp,button_upload,'Upload')
 		b_upload.grid(row=13,column=0,columnspan=4)		
 
-		# clean 按钮
-		# b_upload_clean = self.create_button(self.tab_scp,clean_upload,'Clean')
-		# b_upload_clean.grid(row=13,column=4)
-
 ##### Create tabURLTest
-	
-	# 结果显示
-	def display(self,result):
-		# l_result = self.create_label(result)
-		l_result = tk.Label(self.tab_urltest,text=result,font=('Consolas','12'),width=100,height=4)
-		l_result.grid(row=30,column=0,columnspan=10)
-
 	def create_urltest(self):
 		# 复制按钮
 		def fcopy():
 			pyperclip.copy(t_out.get(0.0,tk.END).strip())
-			self.display('')
+			self.display_results(self.tab_urltest, '')
 		# clean按钮
 		def clean_download():
 			t_path.delete(0.0,tk.END)
-			self.display('')
+			self.display_results(self.tab_urltest, '')
 		# yes 按钮
 		def fyes():
 			e_full.delete(0,tk.END)	
 			e_full.insert(0,'yes')
-			self.display('')
+			self.display_results(self.tab_urltest, '')
 		#no 按钮
 		def fno():
 			e_full.delete(0,tk.END)	
 			e_full.insert(0,'no')
-			self.display('')
+			self.display_results(self.tab_urltest, '')
 		# 404按钮
 		def f404():
 			e_code.delete(0,tk.END)
 			e_code.insert(0,'404')
-			self.display('')
+			self.display_results(self.tab_urltest, '')
 		# 302按钮
 		def f302():
 			e_code.delete(0,tk.END)
 			e_code.insert(0,'302')
-			self.display('')
+			self.display_results(self.tab_urltest, '')
 		# 302请求函数
 		def req_302(url):
 			try:
@@ -705,7 +719,7 @@ class Root():
 				
 				time.sleep(4)
 			except Exception as e:
-				self.display(e)
+				self.display_results(self.tab_urltest, str(e))
 
 		# 404 请求函数
 		def req_404(url):
@@ -721,7 +735,7 @@ class Root():
 				
 				time.sleep(4)
 			except Exception as e:
-				self.display(e)
+				self.display_results(self.tab_urltest, str(e))
 
 
 
@@ -736,13 +750,13 @@ class Root():
 			host = e_host.get()
 			# 判断状态码
 			if not statuscode:
-				self.display('Fill in the Status_code!')
+				self.display_results(self.tab_urltest, 'Fill in the Status_code!')
 
 			elif statuscode == '404':
 
 				# 判断是否为完整URL
 				if not yesno:
-					self.display('IsFullURL value is yes or no!')
+					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
 
 				# 完整URL
 				elif yesno == 'yes':
@@ -766,12 +780,12 @@ class Root():
 							req_404(url)
 
 				else:
-					self.display('IsFullURL value is yes or no!')
+					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
 
 			elif statuscode == '302':
 				# 判断是否为完整URL
 				if not yesno:
-					self.display('IsFullURL value is yes or no!')
+					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
 
 				# 完整URL
 				elif yesno == 'yes':
@@ -786,18 +800,18 @@ class Root():
 
 					# 测试输入是否为空
 					if not host:
-						self.display('host is empty!')
+						self.display_results(self.tab_urltest, 'host is empty!')
 					else:
-						self.display('')
+						self.display_results('')
 						for path in paths:
 							url = host.strip() + path.strip()
 							url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
 							req_404(url)
 
 				else:
-					self.display('IsFullURL value is yes or no!')
+					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
 			else:
-				self.display('Status_code will be 404 or 302!')
+				self.display_results(self.tab_urltest, 'Status_code will be 404 or 302!')
 
 		# Host:
 		l_host = self.create_label(self.tab_urltest,"Host:",w=15,h=1)
@@ -865,10 +879,6 @@ class Root():
 
 
 ##### Create tab dealwith 用于对URL做自定义处理
-	def display_dealwith(self,result):
-		l_result = tk.Label(self.tab_dealwith,text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=30,column=0,columnspan=10)
-
 	def create_dealwith(self):
 		# Button1 函数
 		def Bone():
@@ -879,16 +889,13 @@ class Root():
 				try:
 					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
 				except Exception as e:
-					self.display_dealwith(e)
+					self.display_results(self.tab_dealwith, e)
 
 				if not p.stderr.read():
-					self.display_dealwith('Access success!')						
+					self.display_results(self.tab_dealwith, 'Access success!')						
 				
 			else:
-				self.display_dealwith("username is Empty!")
-
-			# self.display_dealwith(username)
-		
+				self.display_results(self.tab_dealwith, "username is Empty!")
 
 		def Btwo():
 			pass
@@ -973,10 +980,6 @@ class Root():
 		e_b2_des.insert(0,'Not enabled')
 
 ##### Create tab Open URL 自定义URL并且访问
-	def display_openurl(self,result):
-		l_result = tk.Label(self.tab_openurl,text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=30,column=0,columnspan=10)
-
 	def create_openurl(self):
 		# button function
 		def button_open():
@@ -988,7 +991,7 @@ class Root():
 			p4 = e_4.get()
 			p5 = e_5.get()
 			if not url:
-				self.display_openurl('URL is Empty!')
+				self.display_results(self.tab_openurl, 'URL is Empty!')
 			else:
 				if p1:
 					plist.append(p1)
@@ -1013,7 +1016,7 @@ class Root():
 						result = 'Successfully opened: {}'.format(url)
 				except Exception as e:
 					result = e
-				self.display_openurl(result)
+				self.display_results(self.tab_openurl, result)
 			
 
 		# 自定义说明
