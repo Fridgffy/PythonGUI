@@ -17,42 +17,45 @@ class Root():
 	def __init__(self,window):
 		self.window = window
 		self.set_window()
-		# 创建notebook容器
+		# Create notebook container
 		self.notebook = ttk.Notebook(self.window)
 
-		# 创建标签页scp
+		# Create tabscp
 		self.tab_scp = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_scp,text="SCP    ")
 		self.create_scp()
 
-		# 创建标签页 Websites, batch access to url
+		# Create tab Websites, batch access to url
 		self.tab_websites = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_websites,text="    Websites    ")
 		self.create_websites()
 
-		# 创建标签页 httpx
+		# Create tab httpx
 		self.tab_httpx = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_httpx,text="    httpx    ")
 		self.create_httpx()
 
+		# Create tab memo
+		self.tab_memo = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_memo,text="    Memo    ")
+		self.create_memo()
 
-
-		# 创建标签页 Open URL 自定义URL并且访问
+		# Create tab Open URL 自定义URL并且访问
 		self.tab_openurl = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_openurl,text="    Open URL    ")
 		self.create_openurl()
 
-		# 创建标签页replace
+		# Create tabreplace
 		self.tab_replace = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_replace,text="    Replace    ")
 		self.create_replace()
 
-		# 创建标签页URLTest
+		# Create tabURLTest
 		self.tab_urltest = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_urltest,text="    URLTest    ")
 		self.create_urltest()
 
-		# 创建标签页 dealwith 用于对URL做自定义处理
+		# Create tab dealwith 用于对URL做自定义处理
 		self.tab_dealwith = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_dealwith,text="    Deal with URL    ")
 		self.create_dealwith()
@@ -91,7 +94,7 @@ class Root():
 		e = tk.Entry(tab,show=None,width=w,font=('Consolas','12'))
 		return e
 
-##### 创建标签页 Websites
+##### Create tab Websites
 	def display_websites(self,result):
 		l_result = tk.Label(self.tab_websites,text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
@@ -137,6 +140,14 @@ class Root():
 		b_clean = self.create_button(self.tab_websites,fclean,' Clean ')
 		b_clean.grid(row=5,column=0)
 
+##### create tab memo
+	def create_memo(self):
+		content = r'''
+\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}
+		'''
+		t_memo = self.create_text(self.tab_memo,w=100,h=35)
+		t_memo.grid(row=0, column=0)
+		t_memo.insert("1.0", content.strip())
 
 ##### create tab httpx
 	def display_httpx(self,result):
@@ -222,7 +233,7 @@ class Root():
 		b_rewrite.grid(row=7,column=0,columnspan=2)
 
 
-##### 创建标签页replace
+##### Create tabreplace
 
 	def create_replace(self):
 		# 替换按钮函数
@@ -279,7 +290,7 @@ class Root():
 		b_copy.grid(row=2,column=4)
 
 
-##### 创建标签页scp
+##### Create tabscp
 
 	# # 输入框绑定的事件
 	# def clean(self,display_result):
@@ -540,7 +551,7 @@ class Root():
 		# b_upload_clean = self.create_button(self.tab_scp,clean_upload,'Clean')
 		# b_upload_clean.grid(row=13,column=4)
 
-##### 创建标签页URLTest
+##### Create tabURLTest
 	
 	# 结果显示
 	def display(self,result):
@@ -757,7 +768,7 @@ class Root():
 		b_copy.grid(row=4,column=3)
 
 
-##### 创建标签页 dealwith 用于对URL做自定义处理
+##### Create tab dealwith 用于对URL做自定义处理
 	def display_dealwith(self,result):
 		l_result = tk.Label(self.tab_dealwith,text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
@@ -865,7 +876,7 @@ class Root():
 		e_b2_des.grid(row=10,column=3)
 		e_b2_des.insert(0,'Not enabled')
 
-##### 创建标签页 Open URL 自定义URL并且访问
+##### Create tab Open URL 自定义URL并且访问
 	def display_openurl(self,result):
 		l_result = tk.Label(self.tab_openurl,text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
