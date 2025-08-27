@@ -102,7 +102,7 @@ class Root():
 	# result display
 	def display_results(self,tab,result):
 		l_result = tk.Label(tab, text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=7,column=0,columnspan=10)
+		l_result.grid(row=30,column=0,columnspan=10)
 
 ##### Create tab Websites
 	def create_websites(self):
@@ -414,10 +414,10 @@ class Root():
 				self.display_results(self.tab_extract, str(e))
 		def fsave():
 			try:
-				with open(r'C:\Storage\1', 'w', encoding='utf-8') as f:
+				with open(r'./tmp', 'w', encoding='utf-8') as f:
 					content = t_result.get(0.0, tk.END)
 					f.write(content)
-				self.display_results(self.tab_extract, r'Save to file C:\Storage\1')
+				self.display_results(self.tab_extract, r'Save to file ./tmp')
 			except Exception as e:
 				self.display_results(self.tab_extract, str(e))
 
@@ -428,7 +428,7 @@ class Root():
 			e_pattern.delete(0, tk.END)
 		def fdefault_file():
 			e_file.delete(0,tk.END)
-			e_file.insert(0, r'C:\Storage\1')
+			e_file.insert(0, r'./tmp')
 		
 		l_description = self.create_label(self.tab_extract, 'Extracting data from the file or csv using regular expressions', w=100, h=1)
 		l_description.grid(row=0, column=0, columnspan=4)
@@ -451,7 +451,7 @@ class Root():
 		l_file.grid(row=3, column=0)
 		e_file = self.create_entry(self.tab_extract, w=65)
 		e_file.grid(row=3, column=1)
-		e_file.insert(0, r'C:\Storage\1')
+		e_file.insert(0, r'./tmp')
 		b_file = self.create_button(self.tab_extract, fdefault_file, ' Default ')
 		b_file.grid(row=3, column=2)
 
