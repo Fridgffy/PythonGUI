@@ -332,7 +332,7 @@ class Root():
 			try:
 				t_result.delete('1.0','end')
 				pattern = e_pattern.get()
-				file = e_file.get()
+				file = e_file.get().replace('"','')
 				reo = re.compile(pattern, re.I)
 				with open(file, 'r') as f:
 					content = f.read()
@@ -346,7 +346,7 @@ class Root():
 			try:
 				t_result.delete('1.0','end')
 				pattern = e_pattern.get()
-				file = e_file.get()
+				file = e_file.get().replace('"','')
 				reo = re.compile(pattern, re.I)
 				with open(file, 'r') as f:
 					content = f.read()
@@ -357,7 +357,7 @@ class Root():
 				self.display_results(self.tab_extract, str(e))
 
 		l_description = self.create_label(self.tab_extract, 'Extracting data from the file using regular expressions', w=100, h=1)
-		l_description.grid(row=0, column=0, columnspan=5)
+		l_description.grid(row=0, column=0, columnspan=4)
 
 		l_pattern = self.create_label(self.tab_extract, 'Pattern:',w=15,h=1)
 		l_pattern.grid(row=1, column=0)
@@ -369,10 +369,13 @@ class Root():
 
 		e_file = self.create_entry(self.tab_extract, w=75)
 		e_file.grid(row=2, column=1)
-		e_file.insert(0, 'C:\\Users\\DC\\Desktop\\')
+		e_file.insert(0, 'C:\\Users\\DC\\Desktop\\sub_broad')
 
 		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
-		b_extract.grid(row=3, column=0, columnspan=4)
+		b_extract.grid(row=3, column=1, sticky=tk.E)
+
+		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
+		b_deduplication.grid(row=3,column=1,sticky=tk.W)
 
 		t_result = self.create_text(self.tab_extract,w=90,h=25)
 		t_result.grid(row=4, column=0, columnspan=4)
@@ -380,8 +383,7 @@ class Root():
 		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
 		b_clear.grid(row=5, column=0, sticky=tk.W)
 
-		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
-		b_deduplication.grid(row=5,column=1)
+		
 
 ##### Create tab replace
 
