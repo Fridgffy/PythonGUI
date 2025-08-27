@@ -328,21 +328,53 @@ class Root():
 		def fclear():
 			t_result.delete('1.0','end')
 
-		def fextract():
+		def fextract_csv(file):
+			try:
+				result_list = []
+				t_result.delete('1.0','end')
+				pattern = e_getrows.get().strip()
+				with open(file, 'r', encoding='utf-8') as f:
+					reader_obj = csv.reader(f)
+					for rows in reader_obj:
+						row = '\t'.join(rows)
+						if str(pattern) in row:
+							result_list.append(row)
+				t_result.insert('1.0', '\n'.join(result_list))
+				self.display_results(self.tab_extract, 'Extracting completed')
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
+
+		def fextract_else(file):
 			try:
 				t_result.delete('1.0','end')
 				pattern = e_pattern.get()
-				file = e_file.get().replace('"','')
 				reo = re.compile(pattern, re.I)
 				with open(file, 'r') as f:
 					content = f.read()
 					all_content = reo.findall(content)
 					t_result.insert('1.0', '\n'.join(all_content))
+
 				self.display_results(self.tab_extract, 'Extracting completed')
 			except Exception as e:
 				self.display_results(self.tab_extract, str(e))
 
-		def fdeduplication():
+		def fdeduplication_csv(file):
+			try:
+				result_list = []
+				t_result.delete('1.0','end')
+				pattern = e_getrows.get().strip()
+				with open(file, 'r', encoding='utf-8') as f:
+					reader_obj = csv.reader(f)
+					for rows in reader_obj:
+						row = '\t'.join(rows)
+						if str(pattern) in row:
+							result_list.append(row)
+				t_result.insert('1.0', '\n'.join(set(result_list)))
+				self.display_results(self.tab_extract, 'Extracting completed')
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
+
+		def fdeduplication_else(file):
 			try:
 				t_result.delete('1.0','end')
 				pattern = e_pattern.get()
@@ -355,33 +387,64 @@ class Root():
 				self.display_results(self.tab_extract, 'Extracting completed')
 			except Exception as e:
 				self.display_results(self.tab_extract, str(e))
+		
+		def fdeduplication():
+			try:
+				# determine if csv file
+				file = e_file.get().replace('"','')
+				name,ext = os.path.splitext(file)
+				if str(ext) == '.csv':
+					fdeduplication_csv(file)
+				else:
+					fdeduplication_else(file)
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
 
-		l_description = self.create_label(self.tab_extract, 'Extracting data from the file using regular expressions', w=100, h=1)
+		def fextract():
+			try:
+				# determine if csv file
+				file = e_file.get().replace('"','')
+				filename = os.path.split(file)[1]
+				ext = os.path.splitext(filename)[1]
+				if str(ext) == '.csv':
+					fextract_csv(file)
+				else:
+					fextract_else(file)
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
+		
+			
+		
+		l_description = self.create_label(self.tab_extract, 'Extracting data from the file or csv using regular expressions', w=100, h=1)
 		l_description.grid(row=0, column=0, columnspan=4)
 
-		l_pattern = self.create_label(self.tab_extract, 'Pattern:',w=15,h=1)
-		l_pattern.grid(row=1, column=0)
+		l_getrows = self.create_label(self.tab_extract, 'csv_Getrows:',w=15,h=1)
+		l_getrows.grid(row=1,column=0)
+		e_getrows = self.create_entry(self.tab_extract, w=75)
+		e_getrows.grid(row=1, column=1)
+
+		l_pattern = self.create_label(self.tab_extract, 'text_Pattern:',w=15,h=1)
+		l_pattern.grid(row=2, column=0)
 		e_pattern = self.create_entry(self.tab_extract, w=75)
-		e_pattern.grid(row=1, column=1)
+		e_pattern.grid(row=2, column=1)
 
 		l_file = self.create_label(self.tab_extract,'File:',w=15,h=1)
-		l_file.grid(row=2, column=0)
-
+		l_file.grid(row=3, column=0)
 		e_file = self.create_entry(self.tab_extract, w=75)
-		e_file.grid(row=2, column=1)
-		e_file.insert(0, 'C:\\Users\\DC\\Desktop\\sub_broad')
+		e_file.grid(row=3, column=1)
+		e_file.insert(0, r'C:\Users\DC\Desktop\1')
 
 		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
-		b_extract.grid(row=3, column=1, sticky=tk.E)
+		b_extract.grid(row=4, column=1, sticky=tk.E)
 
 		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
-		b_deduplication.grid(row=3,column=1,sticky=tk.W)
+		b_deduplication.grid(row=4,column=1,sticky=tk.W)
 
 		t_result = self.create_text(self.tab_extract,w=90,h=25)
-		t_result.grid(row=4, column=0, columnspan=4)
+		t_result.grid(row=5, column=0, columnspan=4)
 
 		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
-		b_clear.grid(row=5, column=0, sticky=tk.W)
+		b_clear.grid(row=6, column=0, sticky=tk.W)
 
 		
 
