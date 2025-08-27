@@ -243,22 +243,26 @@ class Root():
 
 ##### create tab Subfile
 	def create_subfile(self):
-		def frewrite():
+		def f_httpx_csv():
 			try:
-				old_httpx = e_old_httpx.get()
-				new_httpx = e_new_httpx.get()
+				httpx_output = e_httpx_output.get()
+				httpx_csv = e_httpx_csv.get()
 
-				with open(old_httpx,'r', encoding='utf-8-sig') as old:
-					with open(new_httpx,'w+', newline='', encoding='utf-8-sig') as new:
-						old_file = csv.reader(old)
-						new_file = csv.writer(new)
-						for row in old_file:
-							new_file.writerow(row)
-				self.display_results(self.tab_subfile, 'Rewrite completed')
+				with open(httpx_output,'r', encoding='utf-8-sig') as output:
+					with open(httpx_csv,'w+', newline='', encoding='utf-8-sig') as csv_file:
+						write_obj = csv.writer(csv_file)
+
+						for rows in output:
+							if 'FAILED' not in rows and 'Current httpx version' not in rows and 'nohup:' not in rows and 'UI Dashboard is disabled' not in rows and 'projectdiscovery.io' not in rows:
+								row_list = re.sub(r'\x1b\[\d{1,2}m','',rows).replace('\x1b[m]','').strip().split('[SUCCESS]')
+								write_obj.writerow(row_list)
+
+
+				self.display_results(self.tab_subfile, 'Filter completed')
 			except Exception as e:
 				self.display_results(self.tab_subfile, str(e))
 
-		def fprocess():
+		def falive_httpx():
 			try:
 				alive_file = e_read.get()
 				alive_httpx = e_write.get()
@@ -284,7 +288,7 @@ class Root():
 		def fsecond():
 			pass
 		# process file data
-		l_description = self.create_label(self.tab_subfile, 'Process dnsx output file <alive> to <alive_httpx>: add protocal and port',w=100,h=1)
+		l_description = self.create_label(self.tab_subfile, 'Process dnsx output file <alive>: -> <alive_httpx>, add protocal and port',w=100,h=1)
 		l_description.grid(row=0, column=0, columnspan=5)
 
 		l_read = self.create_label(self.tab_subfile,'File_read:',w=15,h=1)
@@ -299,29 +303,29 @@ class Root():
 		e_write.grid(row=2, column=1)
 		e_write.insert(0, 'C:\\Users\\DC\\Desktop\\alive_httpx')
 
-		b_process = self.create_button(self.tab_subfile, fprocess, ' Process ')
-		b_process.grid(row=3, column=0, columnspan=2)
+		b_alive_httpx = self.create_button(self.tab_subfile, falive_httpx, ' Process ')
+		b_alive_httpx.grid(row=3, column=0, columnspan=2)
 		# separator
 		l_separator_label = tk.Label(self.tab_subfile,text='',font=('Consolas','12'),width=15,height=1)
 		l_separator_label.grid(row=4,column=0, columnspan=10)	
 		# rewrite httpx.csv
-		l_description_rewrite = self.create_label(self.tab_subfile, 'Rewrite httpx.csv to httpx_new.csv: to solve the problem of 中文 being display as ?',w=100,h=1)
+		l_description_rewrite = self.create_label(self.tab_subfile, 'Filter the successfully accessed domain from http_output: -> < httpx.csv >',w=100,h=1)
 		l_description_rewrite.grid(row=5,column=0,columnspan=5)
 
-		l_old_httpx = self.create_label(self.tab_subfile,'Old_httpxfile:',w=15,h=1)
-		l_old_httpx.grid(row=6,column=0)
-		e_old_httpx = self.create_entry(self.tab_subfile, w=55)
-		e_old_httpx.grid(row=6, column=1)
-		e_old_httpx.insert(0,'C:\\Users\\DC\\Desktop\\httpx.csv')
+		l_httpx_output = self.create_label(self.tab_subfile,'httpx_output:',w=15,h=1)
+		l_httpx_output.grid(row=6,column=0)
+		e_httpx_output = self.create_entry(self.tab_subfile, w=55)
+		e_httpx_output.grid(row=6, column=1)
+		e_httpx_output.insert(0,'C:\\Users\\DC\\Desktop\\httpx_output')
 
-		l_new_httpx = self.create_label(self.tab_subfile,'New_httpxfile:',w=15,h=1)
-		l_new_httpx.grid(row=7,column=0)
-		e_new_httpx = self.create_entry(self.tab_subfile, w=55)
-		e_new_httpx.grid(row=7, column=1)
-		e_new_httpx.insert(0,'C:\\Users\\DC\\Desktop\\httpx_new.csv')
+		l_httpx_csv = self.create_label(self.tab_subfile,'httpx_csv:',w=15,h=1)
+		l_httpx_csv.grid(row=7,column=0)
+		e_httpx_csv = self.create_entry(self.tab_subfile, w=55)
+		e_httpx_csv.grid(row=7, column=1)
+		e_httpx_csv.insert(0,'C:\\Users\\DC\\Desktop\\httpx.csv')
 
-		b_rewrite = self.create_button(self.tab_subfile, frewrite, ' Rewrite ')
-		b_rewrite.grid(row=8,column=0,columnspan=2)
+		b_httpx_csv = self.create_button(self.tab_subfile, f_httpx_csv, ' Filter ')
+		b_httpx_csv.grid(row=8,column=0,columnspan=2)
 
 ##### create tab Extract
 	def create_extract(self):
