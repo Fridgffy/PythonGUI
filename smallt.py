@@ -102,7 +102,7 @@ class Root():
 	# result display
 	def display_results(self,tab,result):
 		l_result = tk.Label(tab, text=result,font=('Consolas','12'),width=100,height=5)
-		l_result.grid(row=30,column=0,columnspan=10)
+		l_result.grid(row=7,column=0,columnspan=10)
 
 ##### Create tab Websites
 	def create_websites(self):
@@ -138,7 +138,7 @@ class Root():
 		e_number = self.create_entry(self.tab_websites,w=10)
 		e_number.grid(row=0,column=2,sticky=tk.W)
 
-		t_urls = self.create_text(self.tab_websites,w=85,h=27)
+		t_urls = self.create_text(self.tab_websites,w=85,h=25)
 		t_urls.grid(row=1,column=0,rowspan=4,columnspan=3)
 
 		b_access = self.create_button(self.tab_websites,faccess,' Access ')
@@ -412,27 +412,48 @@ class Root():
 					fextract_else(file)
 			except Exception as e:
 				self.display_results(self.tab_extract, str(e))
-		
-			
+		def fsave():
+			try:
+				with open(r'C:\Storage\1', 'w', encoding='utf-8') as f:
+					content = t_result.get(0.0, tk.END)
+					f.write(content)
+				self.display_results(self.tab_extract, r'Save to file C:\Storage\1')
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
+
+		def fclear_getrows():
+			e_getrows.delete(0, tk.END)
+
+		def fclear_pattern():
+			e_pattern.delete(0, tk.END)
+		def fdefault_file():
+			e_file.delete(0,tk.END)
+			e_file.insert(0, r'C:\Storage\1')
 		
 		l_description = self.create_label(self.tab_extract, 'Extracting data from the file or csv using regular expressions', w=100, h=1)
 		l_description.grid(row=0, column=0, columnspan=4)
 
 		l_getrows = self.create_label(self.tab_extract, 'csv_Getrows:',w=15,h=1)
 		l_getrows.grid(row=1,column=0)
-		e_getrows = self.create_entry(self.tab_extract, w=75)
+		e_getrows = self.create_entry(self.tab_extract, w=65)
 		e_getrows.grid(row=1, column=1)
+		b_getrows = self.create_button(self.tab_extract, fclear_getrows, ' Clear ')
+		b_getrows.grid(row=1, column=2)
 
 		l_pattern = self.create_label(self.tab_extract, 'text_Pattern:',w=15,h=1)
 		l_pattern.grid(row=2, column=0)
-		e_pattern = self.create_entry(self.tab_extract, w=75)
+		e_pattern = self.create_entry(self.tab_extract, w=65)
 		e_pattern.grid(row=2, column=1)
+		b_pattern = self.create_button(self.tab_extract, fclear_pattern, ' Clear ')
+		b_pattern.grid(row=2, column=2)
 
 		l_file = self.create_label(self.tab_extract,'File:',w=15,h=1)
 		l_file.grid(row=3, column=0)
-		e_file = self.create_entry(self.tab_extract, w=75)
+		e_file = self.create_entry(self.tab_extract, w=65)
 		e_file.grid(row=3, column=1)
 		e_file.insert(0, r'C:\Storage\1')
+		b_file = self.create_button(self.tab_extract, fdefault_file, ' Default ')
+		b_file.grid(row=3, column=2)
 
 		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
 		b_extract.grid(row=4, column=1, sticky=tk.E)
@@ -440,12 +461,14 @@ class Root():
 		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
 		b_deduplication.grid(row=4,column=1,sticky=tk.W)
 
-		t_result = self.create_text(self.tab_extract,w=90,h=25)
+		t_result = self.create_text(self.tab_extract,w=80,h=23)
 		t_result.grid(row=5, column=0, columnspan=4)
 
 		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
 		b_clear.grid(row=6, column=0, sticky=tk.W)
 
+		b_save = self.create_button(self.tab_extract, fsave, ' Save ')
+		b_save.grid(row=6, column=2)
 		
 
 ##### Create tab replace
