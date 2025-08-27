@@ -73,7 +73,7 @@ class Root():
 	def set_window(self):
 		self.window.title('SmallTools')
 		width = 930
-		height = 730
+		height = 700
 		screenwidth = self.window.winfo_screenwidth()
 		screenheight = self.window.winfo_screenheight()
 		size_geo = '%dx%d+%d+%d' % (width, height, (screenwidth-width)/2, (screenheight-height)/2)
@@ -461,7 +461,7 @@ class Root():
 		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
 		b_deduplication.grid(row=4,column=1,sticky=tk.W)
 
-		t_result = self.create_text(self.tab_extract,w=80,h=23)
+		t_result = self.create_text(self.tab_extract,w=80,h=20)
 		t_result.grid(row=5, column=0, columnspan=4)
 
 		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
