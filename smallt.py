@@ -302,7 +302,7 @@ class Root():
 		b_process = self.create_button(self.tab_subfile, fprocess, ' Process ')
 		b_process.grid(row=3, column=0, columnspan=2)
 		# separator
-		l_separator_label = tk.Label(self.tab_scp,text='',font=('Consolas','12'),width=15,height=1)
+		l_separator_label = tk.Label(self.tab_subfile,text='',font=('Consolas','12'),width=15,height=1)
 		l_separator_label.grid(row=4,column=0, columnspan=10)	
 		# rewrite httpx.csv
 		l_description_rewrite = self.create_label(self.tab_subfile, 'Rewrite httpx.csv to httpx_new.csv: to solve the problem of 中文 being display as ?',w=100,h=1)
