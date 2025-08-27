@@ -349,7 +349,7 @@ class Root():
 				t_result.delete('1.0','end')
 				pattern = e_pattern.get()
 				reo = re.compile(pattern, re.I)
-				with open(file, 'r') as f:
+				with open(file, 'r', encoding='utf-8') as f:
 					content = f.read()
 					all_content = reo.findall(content)
 					t_result.insert('1.0', '\n'.join(all_content))
@@ -380,7 +380,7 @@ class Root():
 				pattern = e_pattern.get()
 				file = e_file.get().replace('"','')
 				reo = re.compile(pattern, re.I)
-				with open(file, 'r') as f:
+				with open(file, 'r', encoding='utf-8') as f:
 					content = f.read()
 					all_content = reo.findall(content)
 					t_result.insert('1.0', '\n'.join(set(all_content)))
@@ -432,7 +432,7 @@ class Root():
 		l_file.grid(row=3, column=0)
 		e_file = self.create_entry(self.tab_extract, w=75)
 		e_file.grid(row=3, column=1)
-		e_file.insert(0, r'C:\Users\DC\Desktop\1')
+		e_file.insert(0, r'C:\Storage\1')
 
 		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
 		b_extract.grid(row=4, column=1, sticky=tk.E)
