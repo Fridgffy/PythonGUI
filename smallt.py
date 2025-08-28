@@ -47,6 +47,11 @@ class Root():
 		self.notebook.add(self.tab_websites,text="    Websites    ")
 		self.create_websites()
 
+		# create tab diff-finder
+		self.tab_diff_finder = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_diff_finder,text="    Diff-Finder    ")
+		self.create_diff_finder()
+
 		# Create tab Open URL
 		self.tab_openurl = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_openurl,text="    Open URL    ")
@@ -61,11 +66,6 @@ class Root():
 		self.tab_urltest = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_urltest,text="    URLTest    ")
 		self.create_urltest()
-
-		# Create tab dealwith 用于对URL做自定义处理
-		self.tab_dealwith = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_dealwith,text="    Deal with URL    ")
-		self.create_dealwith()
 
 		self.notebook.pack()
 	
@@ -124,28 +124,54 @@ class Root():
 			else:
 				self.display_results(self.tab_websites, 'All URLs accessed')
 
-		# 清空按钮函数
+		def freplace():
+			try:
+				pattern = e_pattern.get()
+				target = e_target.get()
+				content = t_urls.get(0.0, tk.END)
+				new_content = re.sub(pattern, target, content)
+				t_urls.delete(0.0, tk.END)
+				t_urls.insert('1.0', new_content)
+				self.display_results(self.tab_websites, 'Replace completed')
+			except Exception as e:
+				self.display_results(self.tab_websites, str(e))
+		
 		def fclean():
 			t_urls.delete(0.0,tk.END)
 			self.display_results(self.tab_websites, '')
 
-		l_description = self.create_label(self.tab_websites,'Access to websites.Pause access every N lines ->',w=65,h=1)
-		l_description.grid(row=0,column=0)
+		l_description = self.create_label(self.tab_websites,'Access to websites',w=65,h=1)
+		l_description.grid(row=0,column=0,columnspan=5)
 
-		l_number = self.create_label(self.tab_websites,'Number:',w=10,h=1)
-		l_number.grid(row=0,column=1)
+		# l_number = self.create_label(self.tab_websites,'Number:',w=10,h=1)
+		# l_number.grid(row=0,column=3,sticky=tk.W)
+		# e_number = self.create_entry(self.tab_websites,w=10)
+		# e_number.grid(row=0,column=3,sticky=tk.E)
 
-		e_number = self.create_entry(self.tab_websites,w=10)
-		e_number.grid(row=0,column=2,sticky=tk.W)
+		l_pattern = self.create_label(self.tab_websites,'Pattern:',w=10,h=1)
+		l_pattern.grid(row=2,column=0,sticky=tk.E)
+		e_pattern = self.create_entry(self.tab_websites,w=20)
+		e_pattern.grid(row=2,column=1,sticky=tk.W)
+
+		l_target = self.create_label(self.tab_websites,'Target:',w=10,h=1)
+		l_target.grid(row=2,column=2,sticky=tk.E)
+		e_target = self.create_entry(self.tab_websites,w=20)
+		e_target.grid(row=2,column=3,sticky=tk.W)
+		
+		b_replace = self.create_button(self.tab_websites, freplace,' Replace ')
+		b_replace.grid(row=2,column=4)
+		
 
 		t_urls = self.create_text(self.tab_websites,w=85,h=25)
-		t_urls.grid(row=1,column=0,rowspan=4,columnspan=3)
+		t_urls.grid(row=3, column=0,columnspan=4)
 
-		b_access = self.create_button(self.tab_websites,faccess,' Access ')
-		b_access.grid(row=2,column=3)
+		b_access = self.create_button(self.tab_websites, faccess,' Access ')
+		b_access.grid(row=3,column=4)
+
+		
 
 		b_clean = self.create_button(self.tab_websites,fclean,' Clean ')
-		b_clean.grid(row=5,column=0)
+		b_clean.grid(row=5,column=0,columnspan=4)
 
 ##### create tab memo
 	def create_memo(self):
@@ -471,14 +497,103 @@ class Root():
 		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
 		b_clear.grid(row=6, column=0, sticky=tk.W)
 
-		b_save = self.create_button(self.tab_extract, fsave, ' Save ')
+		b_save = tk.Button(self.tab_extract,text=' Save->./tmp ',command=fsave,font=('Consolas','12'),width=15)
 		b_save.grid(row=6, column=2)
 		
+##### create tab Diff-finder
+	def create_diff_finder(self):
+		def fa_clear():
+			t_a.delete(0.0, tk.END)
+
+		def fb_clear():
+			t_b.delete(0.0, tk.END)
+
+		# delete same item from t_a
+		def fa_delete():
+			a_content = t_a.get(0.0,tk.END)
+			same_content = t_same.get(0.0, tk.END)
+			a_list = a_content.strip().split('\n')
+			same_list = same_content.strip().split('\n')
+			new_list = [item for item in a_list if item not in same_list]
+			new_content = '\n'.join(new_list)
+			t_a.delete(0.0, tk.END)
+			t_a.insert(0.0, new_content)
+
+		# delete same item from t_b
+		def fb_delete():
+			b_content = t_b.get(0.0,tk.END)
+			same_content = t_same.get(0.0, tk.END)
+			b_list = b_content.strip().split('\n')
+			same_list = same_content.strip().split('\n')
+			new_list = [item for item in b_list if item not in same_list]
+			new_content = '\n'.join(new_list)
+			t_b.delete(0.0, tk.END)
+			t_b.insert(0.0, new_content)
+
+
+		def ffind():
+			a_content = t_a.get(0.0,tk.END)
+			b_content = t_b.get(0.0, tk.END)
+			a_list = a_content.strip().split('\n')
+			b_list = b_content.strip().split('\n')
+			same_list = set(a_list).intersection(b_list)
+			t_same.delete(0.0, tk.END)
+			t_same.insert(0.0, '\n'.join(same_list))
+		def fa_read():
+			afile = e_a_read.get().strip().replace()
+			with open(afile, 'r') as f:
+				content = f.read()
+				t_a.insert(0.0, content)
+
+		def fb_read():
+			bfile = e_b_read.get()
+			with open(bfile, 'r') as f:
+				content = f.read()
+				t_b.insert(0.0, content)
+		l_description = self.create_label(self.tab_diff_finder, 'Find the differences between A and B, and delete them', w=100, h=1)
+		l_description.grid(row=0, column=0, columnspan=3)
+		l_a = self.create_label(self.tab_diff_finder, 'A',w=5,h=1)
+		l_a.grid(row=1, column=0)
+		l_same = self.create_label(self.tab_diff_finder, 'Same',w=5,h=1)
+		l_same.grid(row=1, column=1)
+		l_b = self.create_label(self.tab_diff_finder, 'B',w=5,h=1)
+		l_b.grid(row=1, column=2)
+
+		t_a = self.create_text(self.tab_diff_finder,w=30,h=23)
+		t_a.grid(row=2, column=0)
+		t_same = self.create_text(self.tab_diff_finder,w=30,h=23)
+		t_same.grid(row=2, column=1)
+		t_b = self.create_text(self.tab_diff_finder,w=30,h=23)
+		t_b.grid(row=2, column=2)
+
+		e_a_read = self.create_entry(self.tab_diff_finder, w=28)
+		e_a_read.grid(row=3, column=0)
+		b_a_read = tk.Button(self.tab_diff_finder, text='Read',command=fa_read,font=('Consolas','12'),width=5)
+		b_a_read.grid(row=3, column=0, sticky=tk.E)
+
+		e_b_read = self.create_entry(self.tab_diff_finder, w=28)
+		e_b_read.grid(row=3, column=2)
+		b_b_read = tk.Button(self.tab_diff_finder, text='Read',command=fb_read,font=('Consolas','12'),width=5)
+		b_b_read.grid(row=3, column=2, sticky=tk.E)
+
+		b_a_clear = self.create_button(self.tab_diff_finder, fa_clear, ' Clear ')
+		b_a_clear.grid(row=4, column=0,sticky=tk.W)
+
+		b_a_delete = self.create_button(self.tab_diff_finder, fa_delete, ' Del ')
+		b_a_delete.grid(row=4, column=0, sticky=tk.E)
+
+		b_find = self.create_button(self.tab_diff_finder, ffind, ' Find ')
+		b_find.grid(row=4, column=1)
+
+		b_b_clear = self.create_button(self.tab_diff_finder, fb_clear, ' Clear ')
+		b_b_clear.grid(row=4, column=2, sticky=tk.W)
+
+		b_b_delete = self.create_button(self.tab_diff_finder, fb_delete, ' Del ')
+		b_b_delete.grid(row=4, column=2, sticky=tk.E)
 
 ##### Create tab replace
 
 	def create_replace(self):
-		# 替换按钮函数
 		def freplace():
 			before = t_input.get(0.0,tk.END)
 			a = e_a.get()
@@ -486,7 +601,7 @@ class Root():
 			after = before.replace(a,b)
 			t_output.delete('1.0','end')
 			t_output.insert('insert',after)
-		# 清空按钮
+		
 		def finputclean():
 			t_input.delete('1.0','end')
 
@@ -970,108 +1085,7 @@ class Root():
 		b_copy.grid(row=4,column=3)
 
 
-##### Create tab dealwith 用于对URL做自定义处理
-	def create_dealwith(self):
-		# Button1 函数
-		def Bone():
-			username = t_input1.get(0.0,tk.END).strip().replace('。','').replace('@','').replace(';','').replace('；','').replace('.','').replace(',','').replace('，','')
-			if username:
-				url = "https://t.me/" + username
-				command = "start chrome %s" %(url)
-				try:
-					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-				except Exception as e:
-					self.display_results(self.tab_dealwith, e)
-
-				if not p.stderr.read():
-					self.display_results(self.tab_dealwith, 'Access success!')						
-				
-			else:
-				self.display_results(self.tab_dealwith, "username is Empty!")
-
-		def Btwo():
-			pass
-
-
-		# 自定义说明
-		Description = "快捷访问电报机器人"
-
-		# 说明
-		l_description = self.create_label(self.tab_dealwith,"Description:",w=20)
-		l_description.grid(row=0,column=0)
-
-		l_descriptions = self.create_label(self.tab_dealwith,display=Description,w=50)
-		l_descriptions.grid(row=0,column=1)
-
-		# 分隔符
-		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
-		l_separator2.grid(row=1,column=0)
-
-		# 输入框1
-		l_input1 = self.create_label(self.tab_dealwith,"Input1:")
-		l_input1.grid(row=2,column=0)
-
-		t_input1 = self.create_text(self.tab_dealwith,w=50,h=10)
-		t_input1.grid(row=2,column=1)
-
-		# 输入框1 说明
-		l_input1_des = self.create_label(self.tab_dealwith,"Des:")
-		l_input1_des.grid(row=2,column=2)
-
-		e_input1_des = self.create_entry(self.tab_dealwith)
-		e_input1_des.grid(row=2,column=3)
-
-		# 分隔符
-		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
-		l_separator2.grid(row=3,column=0)
-
-		# 输入框2
-		l_input2 = self.create_label(self.tab_dealwith,"Input2:")
-		l_input2.grid(row=4,column=0)
-
-		t_input2 = self.create_text(self.tab_dealwith,w=50,h=10)
-		t_input2.grid(row=4,column=1)
-
-		# 输入框2 说明
-		l_input2_des = self.create_label(self.tab_dealwith,"Des:")
-		l_input2_des.grid(row=4,column=2)
-
-		e_input2_des = self.create_entry(self.tab_dealwith)
-		e_input2_des.grid(row=4,column=3)
-
-		e_input2_des.insert(0,'Not enabled')
-
-		# 分隔符
-		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
-		l_separator2.grid(row=5,column=0)
-
-
-		# 按钮1
-		b_1 = self.create_button(self.tab_dealwith,Bone,'Button1')
-		b_1.grid(row=8,column=1)
-
-		l_b1 = self.create_label(self.tab_dealwith,"Des:")
-		l_b1.grid(row=8,column=2)
-
-		e_b1_des = self.create_entry(self.tab_dealwith)
-		e_b1_des.grid(row=8,column=3)
-
-		# 分隔符
-		l_separator2 = self.create_label(self.tab_dealwith,display=' '*75,h=1)
-		l_separator2.grid(row=9,column=0)
-
-		# 按钮2
-		b_2 = self.create_button(self.tab_dealwith,Btwo,"Button2")
-		b_2.grid(row=10,column=1)
-
-		l_b2 = self.create_label(self.tab_dealwith,"Des:")
-		l_b2.grid(row=10,column=2)
-
-		e_b2_des = self.create_entry(self.tab_dealwith)
-		e_b2_des.grid(row=10,column=3)
-		e_b2_des.insert(0,'Not enabled')
-
-##### Create tab Open URL 自定义URL并且访问
+##### Create tab Open URL 
 	def create_openurl(self):
 		# button function
 		def button_open():
@@ -1112,7 +1126,7 @@ class Root():
 			
 
 		# 自定义说明
-		Description = "用$number代表要替代的URL中的变量"
+		Description = "Use '$number' replace the variable in URL"
 
 		# 说明
 		l_description = self.create_label(self.tab_openurl,"Description:",w=15)
