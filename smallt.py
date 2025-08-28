@@ -507,6 +507,8 @@ class Root():
 
 		def fb_clear():
 			t_b.delete(0.0, tk.END)
+		def fsame_clear():
+			t_same.delete(0.0, tk.END)
 
 		# delete same item from t_a
 		def fa_delete():
@@ -539,16 +541,19 @@ class Root():
 			same_list = set(a_list).intersection(b_list)
 			t_same.delete(0.0, tk.END)
 			t_same.insert(0.0, '\n'.join(same_list))
+
 		def fa_read():
-			afile = e_a_read.get().strip().replace()
+			afile = e_a_read.get().strip().replace('"', '')
 			with open(afile, 'r') as f:
 				content = f.read()
+				t_a.delete(0.0, tk.END)
 				t_a.insert(0.0, content)
 
 		def fb_read():
-			bfile = e_b_read.get()
+			bfile = e_b_read.get().strip().replace('"', '')
 			with open(bfile, 'r') as f:
 				content = f.read()
+				t_b.delete(0.0, tk.END)
 				t_b.insert(0.0, content)
 		l_description = self.create_label(self.tab_diff_finder, 'Find the differences between A and B, and delete them', w=100, h=1)
 		l_description.grid(row=0, column=0, columnspan=3)
@@ -574,22 +579,24 @@ class Root():
 		e_b_read = self.create_entry(self.tab_diff_finder, w=28)
 		e_b_read.grid(row=3, column=2)
 		b_b_read = tk.Button(self.tab_diff_finder, text='Read',command=fb_read,font=('Consolas','12'),width=5)
-		b_b_read.grid(row=3, column=2, sticky=tk.E)
+		b_b_read.grid(row=3, column=2, sticky=tk.W)
 
+		b_same_clear = self.create_button(self.tab_diff_finder, fsame_clear, ' Clear ')
+		b_same_clear.grid(row=3, column=1)
 		b_a_clear = self.create_button(self.tab_diff_finder, fa_clear, ' Clear ')
 		b_a_clear.grid(row=4, column=0,sticky=tk.W)
 
-		b_a_delete = self.create_button(self.tab_diff_finder, fa_delete, ' Del ')
+		b_a_delete = self.create_button(self.tab_diff_finder, fa_delete, ' Del-same ')
 		b_a_delete.grid(row=4, column=0, sticky=tk.E)
 
 		b_find = self.create_button(self.tab_diff_finder, ffind, ' Find ')
 		b_find.grid(row=4, column=1)
 
 		b_b_clear = self.create_button(self.tab_diff_finder, fb_clear, ' Clear ')
-		b_b_clear.grid(row=4, column=2, sticky=tk.W)
+		b_b_clear.grid(row=4, column=2, sticky=tk.E)
 
-		b_b_delete = self.create_button(self.tab_diff_finder, fb_delete, ' Del ')
-		b_b_delete.grid(row=4, column=2, sticky=tk.E)
+		b_b_delete = self.create_button(self.tab_diff_finder, fb_delete, ' Del-same ')
+		b_b_delete.grid(row=4, column=2, sticky=tk.W)
 
 ##### Create tab replace
 
