@@ -628,7 +628,7 @@ class Root():
 				in_content = t_input.get(0.0, tk.END)
 				result = base64.b64decode(in_content.strip())
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result..decode('utf-8'))
+				t_output.insert(0.0, result.decode('utf-8'))
 				self.display_results(self.tab_code, 'base64 decode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
