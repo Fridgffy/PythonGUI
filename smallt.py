@@ -11,6 +11,8 @@ import csv
 import re
 import os
 import base64
+import html
+import urllib
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -494,6 +496,7 @@ class Root():
 		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
 		b_extract.grid(row=4, column=1, sticky=tk.E)
 
+		# custom button 
 		b_dedupli_extract = tk.Button(self.tab_extract, text='Dedupli-extract',command=fdupli_extract,font=('Consolas','12'),width=15)
 		b_dedupli_extract.grid(row=4,column=1,sticky=tk.W)
 
@@ -619,20 +622,77 @@ class Root():
 				in_content = t_input.get(0.0, tk.END)
 				result = base64.b64encode(in_content.strip().encode('utf-8'))
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result)
+				t_output.insert(0.0, result.decode('utf-8'))
 				self.display_results(self.tab_code, 'base64 encode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 		def fbase64de():
 			try:
 				in_content = t_input.get(0.0, tk.END)
-				result = base64.b64decode(in_content.strip())
+				result = base64.b64decode(in_content.strip().encode('utf-8'))
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, result.decode('utf-8'))
 				self.display_results(self.tab_code, 'base64 decode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
-		
+		def fbase64_url_en():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = base64.urlsafe_b64encode(in_content.strip().encode('utf-8'))
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result.decode('utf-8'))
+				self.display_results(self.tab_code, 'base64 urlsafe encode completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+		def fbase64_url_de():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = base64.urlsafe_b64decode(in_content.strip().encode('utf-8'))
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result.decode('utf-8'))
+				self.display_results(self.tab_code, 'base64 urlsafe decode completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
+		def fhtml_escape():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = html.escape(in_content.strip())
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'html escape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+		def fhtml_unescape():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = html.unescape(in_content.strip())
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'html unescape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+		def furl_encode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = urllib.parse.quote(in_content.strip(), safe='')
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'html unescape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
+		def furl_decode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = urllib.parse.unquote(in_content.strip())
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'html unescape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
+
 		t_input = self.create_text(self.tab_code,w=90,h=10)
 		t_input.grid(row=0,column=0,columnspan=4)
 		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
@@ -643,13 +703,25 @@ class Root():
 		b_base64_de = self.create_button(self.tab_code, fbase64de,'base64-de')
 		b_base64_de.grid(row=2,column=0)
 
+		b_base64_url_en = self.create_button(self.tab_code, fbase64_url_en,'b64-url-en')
+		b_base64_url_en.grid(row=1,column=1)
+		b_base64_url_de = self.create_button(self.tab_code, fbase64_url_de,'b64-url-de')
+		b_base64_url_de.grid(row=2,column=1)
+
+		b_html_escape = self.create_button(self.tab_code,fhtml_escape,'html-es')
+		b_html_escape.grid(row=1,column=2)
+		b_html_unescape = self.create_button(self.tab_code,fhtml_unescape,'html-unes')
+		b_html_unescape.grid(row=2,column=2)
+
+		b_url_encode = self.create_button(self.tab_code,furl_encode,'url-encode')
+		b_url_encode.grid(row=1,column=3)
+		b_url_decode = self.create_button(self.tab_code,furl_decode,'url-decode')
+		b_url_decode.grid(row=2,column=3)
+
 		t_output = self.create_text(self.tab_code,w=90,h=10)
 		t_output.grid(row=3,column=0,columnspan=4)
 		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
 		b_output_clean.grid(row=3,column=4)
-
-
-		
 
 ##### Create tab scp
 	# 判断IP是否存活
