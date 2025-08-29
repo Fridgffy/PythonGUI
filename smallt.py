@@ -10,6 +10,7 @@ import paramiko
 import csv
 import re
 import os
+import base64
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -30,6 +31,11 @@ class Root():
 		self.tab_memo = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_memo,text="    Memo    ")
 		self.create_memo()
+
+		# Create tab Code
+		self.tab_code = ttk.Frame(self.notebook)
+		self.notebook.add(self.tab_code,text="    Code    ")
+		self.create_code()
 
 		# Create tab subfile
 		self.tab_subfile = ttk.Frame(self.notebook)
@@ -56,11 +62,6 @@ class Root():
 		self.tab_openurl = ttk.Frame(self.notebook)
 		self.notebook.add(self.tab_openurl,text="    Open URL    ")
 		self.create_openurl()
-
-		# Create tabreplace
-		self.tab_replace = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_replace,text="    Replace    ")
-		self.create_replace()
 
 		# Create tabURLTest
 		self.tab_urltest = ttk.Frame(self.notebook)
@@ -90,7 +91,6 @@ class Root():
 		t = tk.Text(tab,width=w,height=h,font=('Consolas','12'))
 		return t
 
-	
 	def create_label(self,tab,display,w=10,h=1):
 		l = tk.Label(tab,text=display,width=w,height=h,font=('Consolas','12'))
 		return l
@@ -142,11 +142,6 @@ class Root():
 
 		l_description = self.create_label(self.tab_websites,'Access to websites',w=65,h=1)
 		l_description.grid(row=0,column=0,columnspan=5)
-
-		# l_number = self.create_label(self.tab_websites,'Number:',w=10,h=1)
-		# l_number.grid(row=0,column=3,sticky=tk.W)
-		# e_number = self.create_entry(self.tab_websites,w=10)
-		# e_number.grid(row=0,column=3,sticky=tk.E)
 
 		l_pattern = self.create_label(self.tab_websites,'Pattern:',w=10,h=1)
 		l_pattern.grid(row=2,column=0,sticky=tk.E)
@@ -612,58 +607,49 @@ class Root():
 		b_b_delete = self.create_button(self.tab_diff_finder, fb_delete, ' Del-same ')
 		b_b_delete.grid(row=4, column=2, sticky=tk.W)
 
-##### Create tab replace
-
-	def create_replace(self):
-		def freplace():
-			before = t_input.get(0.0,tk.END)
-			a = e_a.get()
-			b = e_b.get()
-			after = before.replace(a,b)
-			t_output.delete('1.0','end')
-			t_output.insert('insert',after)
-		
-		def finputclean():
+##### Create tab Code
+	def create_code(self):
+		def finput_clean():
 			t_input.delete('1.0','end')
+		def foutput_clean():
+			t_output.delete(0.0, tk.END)
 
-		# 清除空白字符
-		def fstrip():
-			t_output.delete('1.0','end')
-			b = t_input.get(0.0,tk.END).strip().replace(' ','').replace('\n','').replace('\t','')
-			t_output.insert('insert',b)
-		# 复制按钮
-		def fcopy():
-			pyperclip.copy(t_output.get(0.0,tk.END).strip())
-
-		t_input = self.create_text(self.tab_replace,90,15)
+		def fbase64en():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = base64.b64encode(in_content.strip().encode('utf-8'))
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'base64 encode completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+		def fbase64de():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = base64.b64decode(in_content.strip())
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result..decode('utf-8'))
+				self.display_results(self.tab_code, 'base64 decode completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+		
+		t_input = self.create_text(self.tab_code,w=90,h=10)
 		t_input.grid(row=0,column=0,columnspan=4)
-
-		b_input_clean = self.create_button(self.tab_replace,finputclean,'Clean')
+		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
 		b_input_clean.grid(row=0,column=4)
 
-		e_a = self.create_entry(self.tab_replace,w=10)
-		e_a.grid(row=1,column=0)
-		# 初始值为空格
-		e_a.insert(0,' ')
+		b_base64_en = self.create_button(self.tab_code,fbase64en,'base64-en')
+		b_base64_en.grid(row=1,column=0)
+		b_base64_de = self.create_button(self.tab_code, fbase64de,'base64-de')
+		b_base64_de.grid(row=2,column=0)
 
-		l_l = self.create_label(self.tab_replace,'Replace ——>')
-		l_l.grid(row=1,column=1)
+		t_output = self.create_text(self.tab_code,w=90,h=10)
+		t_output.grid(row=3,column=0,columnspan=4)
+		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
+		b_output_clean.grid(row=3,column=4)
 
-		e_b = self.create_entry(self.tab_replace,w=10)
-		e_b.grid(row=1,column=2)
 
-		b_replace = self.create_button(self.tab_replace,freplace,'Replace')
-		b_replace.grid(row=1,column=3,columnspan=1)
-
-		b_strip = self.create_button(self.tab_replace,fstrip,'Strip')
-		b_strip.grid(row=1,column=4)
-
-		t_output = self.create_text(self.tab_replace,90,15)
-		t_output.grid(row=2,column=0,columnspan=4)
-
-		b_copy = self.create_button(self.tab_replace,fcopy,'Copy')
-		b_copy.grid(row=2,column=4)
-
+		
 
 ##### Create tab scp
 	# 判断IP是否存活
