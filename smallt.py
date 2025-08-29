@@ -373,7 +373,18 @@ class Root():
 				self.display_results(self.tab_extract, 'Extracting completed')
 			except Exception as e:
 				self.display_results(self.tab_extract, str(e))
+		def fdeduplication():
+			try:
+				old_content = t_result.get(0.0, tk.END)
+				old_list = old_content.strip().split('\n')
+				new_list = set(old_list)
+				new_content = '\n'.join(new_list)
 
+				t_result.delete(0.0, tk.END)
+				t_result.insert(0.0, new_content)
+				self.display_results(self.tab_extract, 'Deduplication completed')
+			except Exception as e:
+				self.display_results(self.tab_extract, str(e))
 		def fextract_else(file):
 			try:
 				t_result.delete('1.0','end')
@@ -418,7 +429,7 @@ class Root():
 			except Exception as e:
 				self.display_results(self.tab_extract, str(e))
 		
-		def fdeduplication():
+		def fdupli_extract():
 			try:
 				# determine if csv file
 				file = e_file.get().replace('"','')
@@ -488,14 +499,17 @@ class Root():
 		b_extract = self.create_button(self.tab_extract, fextract, ' Extract ')
 		b_extract.grid(row=4, column=1, sticky=tk.E)
 
-		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
-		b_deduplication.grid(row=4,column=1,sticky=tk.W)
+		b_dedupli_extract = tk.Button(self.tab_extract, text='Dedupli-extract',command=fdupli_extract,font=('Consolas','12'),width=15)
+		b_dedupli_extract.grid(row=4,column=1,sticky=tk.W)
 
 		t_result = self.create_text(self.tab_extract,w=80,h=20)
 		t_result.grid(row=5, column=0, columnspan=4)
 
 		b_clear = self.create_button(self.tab_extract, fclear, ' Clear ')
 		b_clear.grid(row=6, column=0, sticky=tk.W)
+
+		b_deduplication = tk.Button(self.tab_extract, text='Deduplication',command=fdeduplication,font=('Consolas','12'),width=15)
+		b_deduplication.grid(row=6,column=1)
 
 		b_save = tk.Button(self.tab_extract,text=' Save->./tmp ',command=fsave,font=('Consolas','12'),width=15)
 		b_save.grid(row=6, column=2)
