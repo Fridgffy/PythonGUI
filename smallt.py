@@ -60,16 +60,6 @@ class Root():
 		self.notebook.add(self.tab_diff_finder,text="    Diff-Finder    ")
 		self.create_diff_finder()
 
-		# Create tab Open URL
-		self.tab_openurl = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_openurl,text="    Open URL    ")
-		self.create_openurl()
-
-		# Create tabURLTest
-		self.tab_urltest = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab_urltest,text="    URLTest    ")
-		self.create_urltest()
-
 		self.notebook.pack()
 	
 	# 主面板大小设置
@@ -108,24 +98,6 @@ class Root():
 
 ##### Create tab Websites
 	def create_websites(self):
-		# access button function 
-		def faccess():
-			urls = t_urls.get(0.0,tk.END)
-			for url in urls.strip().split('\n'):
-				try:
-					if url:
-						com = f'@start chrome {url.strip()}'
-						p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-					else:
-						pass
-				except Exception as e:
-					self.display_results(self.tab_websites, str(e))
-
-			if p.stderr.read():
-				self.display_results(self.tab_websites, p.stderr.read())
-			else:
-				self.display_results(self.tab_websites, 'All URLs accessed')
-
 		def freplace():
 			try:
 				pattern = e_pattern.get()
@@ -142,8 +114,88 @@ class Root():
 			t_urls.delete(0.0,tk.END)
 			self.display_results(self.tab_websites, '')
 
+		def judgement():
+			try:
+				p1 = e_1.get()
+				p2 = e_2.get()
+				p3 = e_3.get()
+				if p1 or p2 or p3:
+					return True
+				else:
+					return False
+			except Exception as e:
+				self.display_results(self.tab_websites, str(e))
+
+		def faccess():
+			try:
+				p1 = e_1.get()
+				p2 = e_2.get()
+				p3 = e_3.get()
+				if judgement():
+					urls = t_urls.get(0.0,tk.END)
+					for url in urls.strip().split('\n'):
+						try:
+							if url:
+								com = f'@start chrome {url.strip()}'
+								if p1:
+									com = com.replace('$1',p1)
+								if p2:
+									com = com.replace('$2',p2)
+								if p3:
+									com = com.replace('$3',p3)
+								p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+								if p.stderr.read():
+									self.display_results(self.tab_websites, p.stderr.read())
+						except Exception as e:
+							self.display_results(self.tab_websites, str(e))
+				else:
+					urls = t_urls.get(0.0,tk.END)
+					for url in urls.strip().split('\n'):
+						try:
+							if url:
+								com = f'@start chrome {url.strip()}'
+								p = subprocess.Popen(com,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+						except Exception as e:
+							self.display_results(self.tab_websites, str(e))
+					if p.stderr.read():
+						self.display_results(self.tab_websites, p.stderr.read())
+					else:
+						self.display_results(self.tab_websites, 'All URLs accessed')
+			except Exception as e:
+				self.display_results(self.tab_websites, str(e))
+
+		def fentry_clean():
+			try:
+				e_1.delete(0, tk.END)
+				e_2.delete(0, tk.END)
+				e_3.delete(0, tk.END)
+			except Exception as e:
+				self.display_results(self.tab_websites, str(e))
+
 		l_description = self.create_label(self.tab_websites,'Access to websites',w=65,h=1)
-		l_description.grid(row=0,column=0,columnspan=5)
+		l_description.grid(row=0,column=0,columnspan=7)
+
+		# Entry1
+		l_1 = self.create_label(self.tab_websites,'P1:',w=5,h=1)
+		l_1.grid(row=1,column=0)
+		e_1 = self.create_entry(self.tab_websites,w=20)
+		e_1.grid(row=1,column=1)
+
+		# Entry2
+		l_2 = self.create_label(self.tab_websites,'P2:',w=5,h=1)
+		l_2.grid(row=1,column=2)
+		e_2 = self.create_entry(self.tab_websites,w=20)
+		e_2.grid(row=1,column=3)
+
+		# Entry3
+		l_3 = self.create_label(self.tab_websites,'P3:',w=5,h=1)
+		l_3.grid(row=1,column=4)
+		e_3 = self.create_entry(self.tab_websites,w=20)
+		e_3.grid(row=1,column=5)
+
+		b_entry_clean = self.create_button(self.tab_websites, fentry_clean,' Clear ')
+		b_entry_clean.grid(row=1,column=6)
 
 		l_pattern = self.create_label(self.tab_websites,'Pattern:',w=10,h=1)
 		l_pattern.grid(row=2,column=0,sticky=tk.E)
@@ -156,19 +208,18 @@ class Root():
 		e_target.grid(row=2,column=3,sticky=tk.W)
 		
 		b_replace = self.create_button(self.tab_websites, freplace,' Replace ')
-		b_replace.grid(row=2,column=4)
+		b_replace.grid(row=2,column=6)
 		
 
 		t_urls = self.create_text(self.tab_websites,w=85,h=25)
-		t_urls.grid(row=3, column=0,columnspan=4)
+		t_urls.grid(row=3, column=0,columnspan=6)
+		t_urls.insert(0.0,'https://api.github.com/repos/$1/$2/releases/latest')
 
 		b_access = self.create_button(self.tab_websites, faccess,' Access ')
-		b_access.grid(row=3,column=4)
-
-		
+		b_access.grid(row=3,column=6)
 
 		b_clean = self.create_button(self.tab_websites,fclean,' Clean ')
-		b_clean.grid(row=5,column=0,columnspan=4)
+		b_clean.grid(row=5,column=0,columnspan=7)
 
 ##### create tab memo
 	def create_memo(self):
@@ -178,7 +229,7 @@ class Root():
 			if not os.path.exists(file_path):
 				self.display_results(self.tab_memo, f'{file_path} not exists')
 
-			with open(file_path, 'r') as f:
+			with open(file_path, 'r', encoding='utf-8') as f:
 				content = f.read()
 			self.display_results(self.tab_memo, 'Read completed')
 		except Exception as e:
@@ -187,7 +238,7 @@ class Root():
 		def freload():
 			try:
 				t_memo.delete("1.0", 'end')
-				with open(file_path, 'r+') as f2:
+				with open(file_path, 'r+', encoding='utf-8') as f2:
 					content = f2.read()
 					t_memo.insert("1.0", content.strip())
 				self.display_results(self.tab_memo, 'Reload Successfully')
@@ -197,7 +248,7 @@ class Root():
 		def fsave():
 			try:
 				text_content = t_memo.get(0.0, tk.END)
-				with open(file_path, 'w') as f:
+				with open(file_path, 'w', encoding='utf-8') as f:
 					f.write(text_content)
 
 				freload()
@@ -210,7 +261,7 @@ class Root():
 			try:
 				content = e_insert.get().strip().replace('\n','')
 				if content:
-					with open(file_path, 'a') as f:
+					with open(file_path, 'a', encoding='utf-8') as f:
 						f.write('\n')
 						f.write(re.sub(r'^\s*$','', content.strip().replace('\n',''), flags=re.MULTILINE))
 					e_insert.delete(0, tk.END)
@@ -225,8 +276,8 @@ class Root():
 			try:
 				delete_content = e_delete.get()
 
-				with open(file_path, 'r') as f:
-					with open(tmp_file, 'w') as f_write:
+				with open(file_path, 'r', encoding='utf-8') as f:
+					with open(tmp_file, 'w', encoding='utf-8') as f_write:
 						for line in f:
 							if not re.search(r'^\s*$', line.strip()):
 								if not line.strip() == delete_content.strip():
@@ -290,8 +341,8 @@ class Root():
 				alive_file = e_read.get()
 				alive_httpx = e_write.get()
 
-				with open(alive_file, 'r') as f_read:
-					with open(alive_httpx, 'w+') as f_write:
+				with open(alive_file, 'r', encoding='utf-8') as f_read:
+					with open(alive_httpx, 'w+', encoding='utf-8') as f_write:
 						for domain in f_read:
 							http_ports = [80,81,3128,8000,8001,8080,8081,8088,8880,8888,8090,3128,9898,9900,9998,9999,18080,18081] # 18
 							https_ports = [443,453,1443,4243,4443,8834,8443,9443,12443] # 9
@@ -354,7 +405,7 @@ class Root():
 	def create_extract(self):
 		def fclear():
 			t_result.delete('1.0','end')
-
+			self.display_results(self.tab_extract, '')
 		def fextract_csv(file):
 			try:
 				result_list = []
@@ -461,9 +512,10 @@ class Root():
 
 		def fclear_getrows():
 			e_getrows.delete(0, tk.END)
-
+			self.display_results(self.tab_extract, '')
 		def fclear_pattern():
 			e_pattern.delete(0, tk.END)
+			self.display_results(self.tab_extract, '')
 		def fdefault_file():
 			e_file.delete(0,tk.END)
 			e_file.insert(0, r'./tmp')
@@ -516,12 +568,13 @@ class Root():
 	def create_diff_finder(self):
 		def fa_clear():
 			t_a.delete(0.0, tk.END)
-
+			self.display_results(self.tab_diff_finder, '')
 		def fb_clear():
 			t_b.delete(0.0, tk.END)
+			self.display_results(self.tab_diff_finder, '')
 		def fsame_clear():
 			t_same.delete(0.0, tk.END)
-
+			self.display_results(self.tab_diff_finder, '')
 		# delete same item from t_a
 		def fa_delete():
 			a_content = t_a.get(0.0,tk.END)
@@ -556,14 +609,14 @@ class Root():
 
 		def fa_read():
 			afile = e_a_read.get().strip().replace('"', '')
-			with open(afile, 'r') as f:
+			with open(afile, 'r', encoding='utf-8') as f:
 				content = f.read()
 				t_a.delete(0.0, tk.END)
 				t_a.insert(0.0, content)
 
 		def fb_read():
 			bfile = e_b_read.get().strip().replace('"', '')
-			with open(bfile, 'r') as f:
+			with open(bfile, 'r', encoding='utf-8') as f:
 				content = f.read()
 				t_b.delete(0.0, tk.END)
 				t_b.insert(0.0, content)
@@ -614,15 +667,16 @@ class Root():
 	def create_code(self):
 		def finput_clean():
 			t_input.delete('1.0','end')
+			self.display_results(self.tab_code, '')
 		def foutput_clean():
 			t_output.delete(0.0, tk.END)
-
+			self.display_results(self.tab_code, '')
 		def fbase64en():
 			try:
 				in_content = t_input.get(0.0, tk.END)
 				result = base64.b64encode(in_content.strip().encode('utf-8'))
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result.decode('utf-8'))
+				t_output.insert(0.0, result)
 				self.display_results(self.tab_code, 'base64 encode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
@@ -631,7 +685,7 @@ class Root():
 				in_content = t_input.get(0.0, tk.END)
 				result = base64.b64decode(in_content.strip().encode('utf-8'))
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result.decode('utf-8'))
+				t_output.insert(0.0, result)
 				self.display_results(self.tab_code, 'base64 decode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
@@ -640,7 +694,7 @@ class Root():
 				in_content = t_input.get(0.0, tk.END)
 				result = base64.urlsafe_b64encode(in_content.strip().encode('utf-8'))
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result.decode('utf-8'))
+				t_output.insert(0.0, result)
 				self.display_results(self.tab_code, 'base64 urlsafe encode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
@@ -649,7 +703,7 @@ class Root():
 				in_content = t_input.get(0.0, tk.END)
 				result = base64.urlsafe_b64decode(in_content.strip().encode('utf-8'))
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result.decode('utf-8'))
+				t_output.insert(0.0, result)
 				self.display_results(self.tab_code, 'base64 urlsafe decode completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
@@ -731,6 +785,7 @@ class Root():
 
 		b_count = self.create_button(self.tab_code, fcount, 'Count')
 		b_count.grid(row=4, column=0, columnspan=4)
+
 ##### Create tab scp
 	# 判断IP是否存活
 	def test_ip(self,ip):
@@ -961,314 +1016,6 @@ class Root():
 		
 		b_upload = self.create_button(self.tab_scp,button_upload,'Upload')
 		b_upload.grid(row=13,column=0,columnspan=4)		
-
-##### Create tabURLTest
-	def create_urltest(self):
-		# 复制按钮
-		def fcopy():
-			pyperclip.copy(t_out.get(0.0,tk.END).strip())
-			self.display_results(self.tab_urltest, '')
-		# clean按钮
-		def clean_download():
-			t_path.delete(0.0,tk.END)
-			self.display_results(self.tab_urltest, '')
-		# yes 按钮
-		def fyes():
-			e_full.delete(0,tk.END)	
-			e_full.insert(0,'yes')
-			self.display_results(self.tab_urltest, '')
-		#no 按钮
-		def fno():
-			e_full.delete(0,tk.END)	
-			e_full.insert(0,'no')
-			self.display_results(self.tab_urltest, '')
-		# 404按钮
-		def f404():
-			e_code.delete(0,tk.END)
-			e_code.insert(0,'404')
-			self.display_results(self.tab_urltest, '')
-		# 302按钮
-		def f302():
-			e_code.delete(0,tk.END)
-			e_code.insert(0,'302')
-			self.display_results(self.tab_urltest, '')
-		# 302请求函数
-		def req_302(url):
-			try:
-				res = requests.get(url=url,headers={"user-agent":"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"},proxies={"http":"http://127.0.0.1:7890","https":"http://127.0.0.1:7890"},verify=False,allow_redirects=False)
-				#
-				code = res.status_code
-
-				if "Location" in res.headers.keys():
-					location = res.headers['Location']
-				else:
-					location = ""
-				
-				if code == 404:
-					pass
-				elif location == "/pageshow?pageId=1440505892360679424":
-					pass
-				else:
-					t_out.insert('insert',url+' | '+str(code)+'\n')
-				
-				time.sleep(4)
-			except Exception as e:
-				self.display_results(self.tab_urltest, str(e))
-
-		# 404 请求函数
-		def req_404(url):
-			try:
-				res = requests.get(url=url,headers={"user-agent":"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"},proxies={"http":"http://127.0.0.1:7890","https":"http://127.0.0.1:7890"},verify=False,allow_redirects=False)
-				#
-				code = res.status_code
-
-				if code == 404:
-					pass
-				else:
-					t_out.insert('insert',url+' | '+str(code)+'\n')
-				
-				time.sleep(4)
-			except Exception as e:
-				self.display_results(self.tab_urltest, str(e))
-
-
-
-		def button_test():
-			self.display('')
-			yesno = e_full.get()
-			statuscode = e_code.get()
-
-			t_out.delete(0.0,tk.END)
-			
-			paths = t_path.get(0.0,tk.END).strip().split('\n')
-			host = e_host.get()
-			# 判断状态码
-			if not statuscode:
-				self.display_results(self.tab_urltest, 'Fill in the Status_code!')
-
-			elif statuscode == '404':
-
-				# 判断是否为完整URL
-				if not yesno:
-					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
-
-				# 完整URL
-				elif yesno == 'yes':
-					self.display('')
-					for path in paths:
-						url = path.strip()
-						url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
-						req_404(url)
-
-				# 非完整URL
-				elif yesno == 'no':
-
-					# 测试输入是否为空
-					if not host:
-						self.display('host is empty!')
-					else:
-						self.display('')
-						for path in paths:
-							url = host.strip() + path.strip()
-							url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
-							req_404(url)
-
-				else:
-					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
-
-			elif statuscode == '302':
-				# 判断是否为完整URL
-				if not yesno:
-					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
-
-				# 完整URL
-				elif yesno == 'yes':
-					self.display('')
-					for path in paths:
-						url = path.strip()
-						url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
-						req_404(url)
-
-				# 非完整URL
-				elif yesno == 'no':
-
-					# 测试输入是否为空
-					if not host:
-						self.display_results(self.tab_urltest, 'host is empty!')
-					else:
-						self.display_results('')
-						for path in paths:
-							url = host.strip() + path.strip()
-							url = url.replace('//','/').replace('https:/','https://').replace('http:/','http://')
-							req_404(url)
-
-				else:
-					self.display_results(self.tab_urltest, 'IsFullURL value is yes or no!')
-			else:
-				self.display_results(self.tab_urltest, 'Status_code will be 404 or 302!')
-
-		# Host:
-		l_host = self.create_label(self.tab_urltest,"Host:",w=15,h=1)
-		l_host.grid(row=0,column=0)
-
-		e_host = self.create_entry(self.tab_urltest,w=15)
-		e_host.grid(row=0,column=1)
-
-		# button
-		b_test = self.create_button(self.tab_urltest,button_test,'Test')
-		b_test.grid(row=0,column=2)
-		
-		# 是否是完整的URL
-		l_full = self.create_label(self.tab_urltest,"IsFullURL:",w=10,h=1)
-		l_full.grid(row=1,column=0)
-
-		e_full = self.create_entry(self.tab_urltest,w=10)
-		e_full.grid(row=1,column=1)
-		e_full.insert(0,'no')
-
-		# yes button 
-		b_yes = self.create_button(self.tab_urltest,fyes,'yes')
-		b_yes.grid(row=1,column=2)
-
-		# no button 
-		b_no = self.create_button(self.tab_urltest,fno,'no')
-		b_no.grid(row=1,column=3)
-
-		#http code
-		l_code = self.create_label(self.tab_urltest,"Status_code:",w=15)
-		l_code.grid(row=2,column=0)
-
-		e_code = self.create_entry(self.tab_urltest,w=10)
-		e_code.grid(row=2,column=1)
-		e_code.insert(0,'404')
-
-		# code botton
-		b_404 = self.create_button(self.tab_urltest,f404,"404")
-		b_404.grid(row=2,column=2)
-
-		b_302 = self.create_button(self.tab_urltest,f302,"302")
-		b_302.grid(row=2,column=3)
-
-		# Path
-		l_path = self.create_label(self.tab_urltest,"Path:",w=15,h=1)
-		l_path.grid(row=3,column=0)
-
-		t_path = self.create_text(self.tab_urltest,w=35,h=23)
-		t_path.grid(row=3,column=1)
-
-		# clean button
-		b_down_clean = self.create_button(self.tab_urltest,clean_download,'Clean')
-		b_down_clean.grid(row=4,column=1)
-
-		# output
-		l_out = self.create_label(self.tab_urltest,"Output:",w=10,h=1)
-		l_out.grid(row=3,column=2)
-
-		t_out = self.create_text(self.tab_urltest,w=35,h=23)
-		t_out.grid(row=3,column=3)
-
-		# copy button
-		b_copy = self.create_button(self.tab_urltest,fcopy,'Copy')
-		b_copy.grid(row=4,column=3)
-
-
-##### Create tab Open URL 
-	def create_openurl(self):
-		# button function
-		def button_open():
-			url = e_url.get()
-			plist = []
-			p1 = e_1.get()
-			p2 = e_2.get()
-			p3 = e_3.get()
-			p4 = e_4.get()
-			p5 = e_5.get()
-			if not url:
-				self.display_results(self.tab_openurl, 'URL is Empty!')
-			else:
-				if p1:
-					plist.append(p1)
-				if p2:
-					plist.append(p2)
-				if p3:
-					plist.append(p3)
-				if p4:
-					plist.append(p4)
-				if p5:
-					plist.append(p5)
-				for i in range(1,len(plist)+1):
-					url = url.replace('${}'.format(i),plist[i-1])
-				
-				command = 'start chrome {url}'.format(url=url)
-				try:
-					p = subprocess.Popen(command,shell=True,stderr=subprocess.PIPE)
-					stderr = p.stderr.read()
-					if stderr:
-						result = stderr
-					else:
-						result = 'Successfully opened: {}'.format(url)
-				except Exception as e:
-					result = e
-				self.display_results(self.tab_openurl, result)
-			
-
-		# 自定义说明
-		Description = "Use '$number' replace the variable in URL"
-
-		# 说明
-		l_description = self.create_label(self.tab_openurl,"Description:",w=15)
-		l_description.grid(row=0,column=0)
-
-		l_descriptions = self.create_label(self.tab_openurl,display=Description,w=50)
-		l_descriptions.grid(row=0,column=1)
-
-		# 分隔符
-		l_separator = self.create_label(self.tab_openurl,display=' '*75,h=1)
-		l_separator.grid(row=1,column=0)
-
-		# URL输入框
-		l_url = self.create_label(self.tab_openurl,'URL:',w=10,h=1)
-		l_url.grid(row=2,column=0,sticky=tk.W)
-		e_url = self.create_entry(self.tab_openurl,w=85)
-		e_url.grid(row=2,column=1,sticky=tk.W)
-		e_url.insert(0,'https://api.github.com/repos/$1/$2/releases/latest')
-		# 分隔符2
-		l_separator_2 = self.create_label(self.tab_openurl,display=' '*75,h=1)
-		l_separator_2.grid(row=3,column=0)
-
-		# 输入框1
-		l_1 = self.create_label(self.tab_openurl,'Param1:',w=10,h=1)
-		l_1.grid(row=4,column=0,sticky=tk.W)
-		e_1 = self.create_entry(self.tab_openurl,w=20)
-		e_1.grid(row=4,column=1,sticky=tk.W)
-
-		# 输入框2
-		l_2 = self.create_label(self.tab_openurl,'Param2:',w=10,h=1)
-		l_2.grid(row=5,column=0,sticky=tk.W)
-		e_2 = self.create_entry(self.tab_openurl,w=20)
-		e_2.grid(row=5,column=1,sticky=tk.W)
-
-		# 输入框1
-		l_3 = self.create_label(self.tab_openurl,'Param3:',w=10,h=1)
-		l_3.grid(row=6,column=0,sticky=tk.W)
-		e_3 = self.create_entry(self.tab_openurl,w=20)
-		e_3.grid(row=6,column=1,sticky=tk.W)
-
-		# 输入框1
-		l_4 = self.create_label(self.tab_openurl,'Param4:',w=10,h=1)
-		l_4.grid(row=7,column=0,sticky=tk.W)
-		e_4 = self.create_entry(self.tab_openurl,w=20)
-		e_4.grid(row=7,column=1,sticky=tk.W)
-
-		# 输入框1
-		l_5 = self.create_label(self.tab_openurl,'Param5:',w=10,h=1)
-		l_5.grid(row=8,column=0,sticky=tk.W)
-		e_5 = self.create_entry(self.tab_openurl,w=20)
-		e_5.grid(row=8,column=1,sticky=tk.W)
-
-		# 访问按钮
-		b_open = self.create_button(self.tab_openurl,button_open,'Open')
-		b_open.grid(row=13,column=0,columnspan=4)	
 
 if __name__ == '__main__':
 	
