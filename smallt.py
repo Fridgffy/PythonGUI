@@ -695,7 +695,7 @@ class Root():
 		def fcount():
 			try:
 				out_content = t_output.get(0.0, tk.END)
-				self.display_results(str(out_content.strip()))
+				self.display_results(self.tab_code, len(out_content.strip()))
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 		
@@ -730,7 +730,7 @@ class Root():
 		b_output_clean.grid(row=3,column=4)
 
 		b_count = self.create_button(self.tab_code, fcount, 'Count')
-		b_count.grid(row=4, column=0)
+		b_count.grid(row=4, column=0, columnspan=4)
 ##### Create tab scp
 	# 判断IP是否存活
 	def test_ip(self,ip):
