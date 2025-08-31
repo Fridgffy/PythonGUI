@@ -745,6 +745,23 @@ class Root():
 				self.display_results(self.tab_code, 'html unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
+		def fhex_encode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = in_content.strip().encode('utf-8').hex()
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, '0x'+result)
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
+		def fhex_decode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = bytes.fromhex(re.sub(r'^0x', '', in_content.strip()))
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
 
 		def fcount():
 			try:
@@ -753,11 +770,6 @@ class Root():
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 		
-		t_input = self.create_text(self.tab_code,w=90,h=10)
-		t_input.grid(row=0,column=0,columnspan=4)
-		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
-		b_input_clean.grid(row=0,column=4)
-
 		b_base64_en = self.create_button(self.tab_code,fbase64en,'base64-en')
 		b_base64_en.grid(row=1,column=0)
 		b_base64_de = self.create_button(self.tab_code, fbase64de,'base64-de')
@@ -778,13 +790,24 @@ class Root():
 		b_url_decode = self.create_button(self.tab_code,furl_decode,'url-decode')
 		b_url_decode.grid(row=2,column=3)
 
-		t_output = self.create_text(self.tab_code,w=90,h=10)
-		t_output.grid(row=3,column=0,columnspan=4)
-		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
-		b_output_clean.grid(row=3,column=4)
+		b_hex_encode = self.create_button(self.tab_code,fhex_encode,'hex-encode')
+		b_hex_encode.grid(row=1,column=4)
+		b_hex_decode = self.create_button(self.tab_code,fhex_decode,'hex-decode')
+		b_hex_decode.grid(row=2,column=4)
 
+		t_input = self.create_text(self.tab_code,w=90,h=10)
+		t_input.grid(row=0,column=0,columnspan=5)
+		t_output = self.create_text(self.tab_code,w=90,h=10)
+		t_output.grid(row=3,column=0,columnspan=5)
 		b_count = self.create_button(self.tab_code, fcount, 'Count')
-		b_count.grid(row=4, column=0, columnspan=4)
+		b_count.grid(row=4, column=0, columnspan=5)
+
+		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
+		b_output_clean.grid(row=3,column=5)
+		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
+		b_input_clean.grid(row=0,column=5)
+
+		
 
 ##### Create tab scp
 	# 判断IP是否存活
