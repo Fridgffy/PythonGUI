@@ -201,7 +201,7 @@ class Root():
 		l_pattern.grid(row=2,column=0,sticky=tk.E)
 		e_pattern = self.create_entry(self.tab_websites,w=20)
 		e_pattern.grid(row=2,column=1,sticky=tk.W)
-
+		e_pattern.insert(0, '(http://|https://|/)')
 		l_target = self.create_label(self.tab_websites,'Target:',w=10,h=1)
 		l_target.grid(row=2,column=2,sticky=tk.E)
 		e_target = self.create_entry(self.tab_websites,w=20)
@@ -762,6 +762,23 @@ class Root():
 				t_output.insert(0.0, result)
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
+		def funicode_encode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = in_content.strip().encode('unicode_escape')
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
+		def funicode_decode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				result = in_content.strip().encode().decode('unicode_escape')
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
 
 		def fcount():
 			try:
@@ -795,17 +812,22 @@ class Root():
 		b_hex_decode = self.create_button(self.tab_code,fhex_decode,'hex-decode')
 		b_hex_decode.grid(row=2,column=4)
 
+		b_unicode_encode = self.create_button(self.tab_code,funicode_encode,'Unicode-en')
+		b_unicode_encode.grid(row=1,column=5)
+		b_unicode_decode = self.create_button(self.tab_code,funicode_decode,'Unicode-de')
+		b_unicode_decode.grid(row=2,column=5)
+
 		t_input = self.create_text(self.tab_code,w=90,h=10)
-		t_input.grid(row=0,column=0,columnspan=5)
+		t_input.grid(row=0,column=0,columnspan=6)
 		t_output = self.create_text(self.tab_code,w=90,h=10)
-		t_output.grid(row=3,column=0,columnspan=5)
+		t_output.grid(row=3,column=0,columnspan=6)
 		b_count = self.create_button(self.tab_code, fcount, 'Count')
-		b_count.grid(row=4, column=0, columnspan=5)
+		b_count.grid(row=4, column=0, columnspan=6)
 
 		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
-		b_output_clean.grid(row=3,column=5)
+		b_output_clean.grid(row=3,column=6)
 		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
-		b_input_clean.grid(row=0,column=5)
+		b_input_clean.grid(row=0,column=6)
 
 		
 
