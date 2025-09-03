@@ -764,10 +764,17 @@ class Root():
 				self.display_results(self.tab_code, str(e))
 		def funicode_encode():
 			try:
+				results = ''
 				in_content = t_input.get(0.0, tk.END)
-				result = in_content.strip().encode('unicode_escape')
+				for char in str(in_content.strip()):
+					ascii_char = ord(char)
+					if ascii_char < 256:
+						result = f'\\u{ascii_char:04x}'
+					else:
+						result = in_content.strip().encode('unicode_escape')
+					results += result
 				t_output.delete(0.0, tk.END)
-				t_output.insert(0.0, result)
+				t_output.insert(0.0, results)
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 
@@ -797,9 +804,9 @@ class Root():
 		b_base64_url_de = self.create_button(self.tab_code, fbase64_url_de,'b64-url-de')
 		b_base64_url_de.grid(row=2,column=1)
 
-		b_html_escape = self.create_button(self.tab_code,fhtml_escape,'html-es')
+		b_html_escape = self.create_button(self.tab_code,fhtml_escape,'html-en')
 		b_html_escape.grid(row=1,column=2)
-		b_html_unescape = self.create_button(self.tab_code,fhtml_unescape,'html-unes')
+		b_html_unescape = self.create_button(self.tab_code,fhtml_unescape,'html-de')
 		b_html_unescape.grid(row=2,column=2)
 
 		b_url_encode = self.create_button(self.tab_code,furl_encode,'url-encode')
