@@ -665,6 +665,18 @@ class Root():
 
 ##### Create tab Code
 	def create_code(self):
+		def freplace():
+			try:
+				pattern = e_pattern.get()
+				target = e_target.get()
+				content = t_output.get(0.0, tk.END)
+				new_content = re.sub(pattern, target, content)
+				t_output.delete(0.0, tk.END)
+				t_output.insert('1.0', new_content)
+				self.display_results(self.tab_code, 'Replace completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
 		def finput_clean():
 			t_input.delete('1.0','end')
 			self.display_results(self.tab_code, '')
@@ -732,7 +744,7 @@ class Root():
 				result = urllib.parse.quote(in_content.strip(), safe='')
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, result)
-				self.display_results(self.tab_code, 'html unescape completed')
+				self.display_results(self.tab_code, 'URL unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 
@@ -742,7 +754,7 @@ class Root():
 				result = urllib.parse.unquote(in_content.strip())
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, result)
-				self.display_results(self.tab_code, 'html unescape completed')
+				self.display_results(self.tab_code, 'URL unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 		def fhex_encode():
@@ -751,6 +763,7 @@ class Root():
 				result = in_content.strip().encode('utf-8').hex()
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, '0x'+result)
+				self.display_results(self.tab_code, 'Hex unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 
@@ -760,6 +773,7 @@ class Root():
 				result = bytes.fromhex(re.sub(r'^0x', '', in_content.strip()))
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'Hex unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 		def funicode_encode():
@@ -775,6 +789,7 @@ class Root():
 					results += result
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, results)
+				self.display_results(self.tab_code, 'Unicode unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 
@@ -784,6 +799,7 @@ class Root():
 				result = in_content.strip().encode().decode('unicode_escape')
 				t_output.delete(0.0, tk.END)
 				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'Unicode unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 
@@ -829,15 +845,26 @@ class Root():
 		t_output = self.create_text(self.tab_code,w=90,h=10)
 		t_output.grid(row=3,column=0,columnspan=6)
 		b_count = self.create_button(self.tab_code, fcount, 'Count')
-		b_count.grid(row=4, column=0, columnspan=6)
+		b_count.grid(row=5, column=0, columnspan=6)
 
 		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
 		b_output_clean.grid(row=3,column=6)
 		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
 		b_input_clean.grid(row=0,column=6)
+		b_replace = self.create_button(self.tab_code, freplace,' Replace ')
+		b_replace.grid(row=4,column=6)
 
+		l_pattern = self.create_label(self.tab_code,'Pattern:',w=10,h=1)
+		l_pattern.grid(row=4,column=0,sticky=tk.E)
+		e_pattern = self.create_entry(self.tab_code,w=20)
+		e_pattern.grid(row=4,column=1,sticky=tk.W)
+		e_pattern.insert(0, '=')
+		l_target = self.create_label(self.tab_code,'Target:',w=10,h=1)
+		l_target.grid(row=4,column=2,sticky=tk.E)
+		e_target = self.create_entry(self.tab_code,w=20)
+		e_target.grid(row=4,column=3,sticky=tk.W)
+		e_target.insert(0, '_')
 		
-
 ##### Create tab scp
 	# 判断IP是否存活
 	def test_ip(self,ip):
