@@ -803,6 +803,41 @@ class Root():
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
 
+		def fascii_encode():
+			try:
+				delimiter = str(e_ascii_delimiter.get())
+				in_content = t_input.get(0.0, tk.END).strip()
+				charlist = []
+				for char in in_content:
+					charlist.append(str(ord(char)))
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, delimiter.join(charlist))
+				self.display_results(self.tab_code, 'ascii escape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
+		def fascii_decode():
+			try:
+				in_content = t_input.get(0.0, tk.END).strip()
+				strlist = []
+				if ' ' in in_content:
+					delimiter = ' '
+				elif ',' in in_content:
+					delimiter = ','
+				else:
+					delimiter = str(e_ascii_delimiter.get())
+				if delimiter:
+					for ascii_code in in_content.split(delimiter):
+						strlist.append(chr(int(ascii_code)))
+				else:
+					strlist.append(chr(int(in_content)))
+					
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, delimiter.join(strlist))
+				self.display_results(self.tab_code, 'ascii unescape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
+
 		def fcount():
 			try:
 				out_content = t_output.get(0.0, tk.END)
@@ -840,29 +875,37 @@ class Root():
 		b_unicode_decode = self.create_button(self.tab_code,funicode_decode,'Unicode-de')
 		b_unicode_decode.grid(row=2,column=5)
 
+		e_ascii_delimiter = self.create_entry(self.tab_code,w=10)
+		e_ascii_delimiter.grid(row=3,column=0)
+		
+		b_ascii_encode = self.create_button(self.tab_code,fascii_encode,'ASCII-en')
+		b_ascii_encode.grid(row=4,column=0)
+		b_ascii_decode = self.create_button(self.tab_code,fascii_decode,'ASCII-de')
+		b_ascii_decode.grid(row=4,column=1)
+
 		t_input = self.create_text(self.tab_code,w=90,h=10)
 		t_input.grid(row=0,column=0,columnspan=6)
 		t_output = self.create_text(self.tab_code,w=90,h=10)
-		t_output.grid(row=3,column=0,columnspan=6)
+		t_output.grid(row=5,column=0,columnspan=6)
 		b_count = self.create_button(self.tab_code, fcount, 'Count')
-		b_count.grid(row=5, column=0, columnspan=6)
+		b_count.grid(row=7, column=0, columnspan=6)
 
 		b_output_clean = self.create_button(self.tab_code,foutput_clean,'Clean')
-		b_output_clean.grid(row=3,column=6)
+		b_output_clean.grid(row=5,column=6)
 		b_input_clean = self.create_button(self.tab_code,finput_clean,'Clean')
 		b_input_clean.grid(row=0,column=6)
 		b_replace = self.create_button(self.tab_code, freplace,' Replace ')
-		b_replace.grid(row=4,column=6)
+		b_replace.grid(row=6,column=6)
 
 		l_pattern = self.create_label(self.tab_code,'Pattern:',w=10,h=1)
-		l_pattern.grid(row=4,column=0,sticky=tk.E)
+		l_pattern.grid(row=6,column=0,sticky=tk.E)
 		e_pattern = self.create_entry(self.tab_code,w=20)
-		e_pattern.grid(row=4,column=1,sticky=tk.W)
+		e_pattern.grid(row=6,column=1,sticky=tk.W)
 		e_pattern.insert(0, '=')
 		l_target = self.create_label(self.tab_code,'Target:',w=10,h=1)
-		l_target.grid(row=4,column=2,sticky=tk.E)
+		l_target.grid(row=6,column=2,sticky=tk.E)
 		e_target = self.create_entry(self.tab_code,w=20)
-		e_target.grid(row=4,column=3,sticky=tk.W)
+		e_target.grid(row=6,column=3,sticky=tk.W)
 		e_target.insert(0, '_')
 		
 ##### Create tab scp
