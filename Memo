@@ -5,6 +5,10 @@
 shisu\.edu\.cn(?=\w)
 http%3a%2f%2f
 .*\.(jsp|html|shtm|shtml|do|psp|htm|js|aspx|asp|php|github\.io|163\.com)\n
-as\d+
 futhwofofr@outlook.com
 (http://|/)
+extractvalue(1,concat(0x7e,database()))
+database()='security'
+and(extractvalue(1,concat(0x7e,database())))
+
+or if(database()='security',sleep(0.3),1)
