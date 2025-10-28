@@ -80,7 +80,7 @@ class Root():
 		return b
 
 	def create_text(self,tab,w,h):
-		t = tk.Text(tab,width=w,height=h,font=('Consolas','12'))
+		t = tk.Text(tab, undo=True, width=w,height=h,font=('Consolas','12'))
 		return t
 
 	def create_label(self,tab,display,w=10,h=1):
