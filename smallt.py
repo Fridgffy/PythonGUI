@@ -1,6 +1,7 @@
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import subprocess
 import pyperclip
 import requests
@@ -13,7 +14,10 @@ import os
 import base64
 import html
 import urllib
-
+import ffmpeg
+import whisper
+import io
+import contextlib
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -60,9 +64,14 @@ class Root():
 		self.notebook.add(self.tab_diff_finder,text="    Diff-Finder    ")
 		self.create_diff_finder()
 
+		# create tab VToText
+		# self.tab_vtotext = ttk.Frame(self.notebook)
+		# self.notebook.add(self.tab_vtotext, text="    VToText    ")
+		# self.create_vtotext()
+
 		self.notebook.pack()
 	
-	# 主面板大小设置
+	# Main panel size
 	def set_window(self):
 		self.window.title('SmallTools')
 		width = 930
@@ -74,7 +83,7 @@ class Root():
 		self.window.geometry(size_geo)
 
 
-	# 生成函数
+	# create function
 	def create_button(self,tab,function,display,w=10):
 		b = tk.Button(tab,text=display,command=function,font=('Consolas','12'),width=w)
 		return b
@@ -95,6 +104,19 @@ class Root():
 	def display_results(self,tab,result):
 		l_result = tk.Label(tab, text=result,font=('Consolas','12'),width=100,height=5)
 		l_result.grid(row=30,column=0,columnspan=10)
+
+	# Geet file absolute path
+	def getpath(self):
+		path = filedialog.askopenfilename(
+				title = "Choise a file",
+				initialdir = r"D:\will\day12sql注入漏洞之报错注入",
+				# initialdir = "C:\\Users\\DC\\Desktop",
+				filetypes = (
+					("All Files", "*.*"),
+					("Text File", "*.txt")
+				)
+			)
+		return path
 
 ##### Create tab Websites
 	def create_websites(self):
@@ -1138,6 +1160,80 @@ class Root():
 		
 		b_upload = self.create_button(self.tab_scp,button_upload,'Upload')
 		b_upload.grid(row=13,column=0,columnspan=4)		
+
+#### create tab VToText
+	def create_vtotext(self):
+		def clean():
+			self.display_results(self.tab_vtotext, '')
+		def getpath_video():
+			clean()
+			path = self.getpath()
+			e_video.insert(0, path)
+		def getpath_text():
+			clean()
+			path = self.getpath()
+			e_text.insert(0, path)
+		
+		def transcribe():
+			try:
+				videopath = e_video.get()
+				textpath = e_text.get()
+				if videopath:
+					if textpath:
+						try:
+							# extract audio
+							audiopath = "tmp_audio.wav"
+							(
+								ffmpeg
+								.input(videopath)
+								.output(audiopath, format='wav', acodec='pcm_s16le', ac=1, ar='16000')
+								.overwrite_output()
+								.run(quiet=True)
+							)
+						except Exception as e:
+							self.display_results(self.tab_vtotext, 'ffmpeg error: ' + str(e.stderr.decode('utf-8')))
+						try:
+							# load whisper
+							f = io.StringIO()
+							with contextlib.redirect_stdout(f):
+								model = whisper.load_model('medium')
+								# transcribe
+								result = model.transcribe(audiopath, verbose=True, language="zh")
+								t_output.insert(f.getvalue())
+								t_output.insert("insert", result)
+								
+						except Exception as e:
+							self.display_results(self.tab_vtotext, 'whisper error: ' + str(e))
+					else:
+						self.display_results(self.tab_vtotext, 'Text path is empty!')	
+				else:
+					self.display_results(self.tab_vtotext, 'Video path is empty!')
+				try:
+					os.remove('./tmp_audio.wav')
+				except Exception as e:
+					pass
+			except Exception as e:
+				self.display_results(self.tab_vtotext, str(e))
+
+		l_description = self.create_label(self.tab_vtotext, 'Vidoe To Text', w=65, h=1)
+		l_description.grid(row=0, column=0, columnspan=6)
+		l_video = self.create_label(self.tab_vtotext, 'Video', w=10, h=1)
+		l_video.grid(row=1, column=0)
+		e_video = self.create_entry(self.tab_vtotext, w=70)
+		e_video.grid(row=1, column=1)
+		b_video = self.create_button(self.tab_vtotext, getpath_video, 'File')
+		b_video.grid(row=1, column=2)
+		l_text = self.create_label(self.tab_vtotext, 'Text', w=10, h=1)
+		l_text.grid(row=2, column=0)
+		e_text = self.create_entry(self.tab_vtotext, w=70)
+		e_text.grid(row=2, column=1)
+		e_text.insert(0, "C:\\Users\\DC\\Desktop\\transcribe_output")
+		b_text = self.create_button(self.tab_vtotext, getpath_text, 'File')
+		b_text.grid(row=2, column=2)
+		t_output = self.create_text(self.tab_vtotext, w=90, h=25)
+		t_output.grid(row=3, column=0, columnspan=6)
+		b_transcribe = self.create_button(self.tab_vtotext, transcribe, 'Transcribe')
+		b_transcribe.grid(row=4, column=0, columnspan=6)
 
 if __name__ == '__main__':
 	
