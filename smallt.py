@@ -760,6 +760,16 @@ class Root():
 				self.display_results(self.tab_code, 'html unescape completed')
 			except Exception as e:
 				self.display_results(self.tab_code, str(e))
+		def furl_all_encode():
+			try:
+				in_content = t_input.get(0.0, tk.END)
+				s = in_content.strip().encode('utf-8')
+				result = "".join(f"%{b:02X}" for b in s)
+				t_output.delete(0.0, tk.END)
+				t_output.insert(0.0, result)
+				self.display_results(self.tab_code, 'URL_all escape completed')
+			except Exception as e:
+				self.display_results(self.tab_code, str(e))
 		def furl_encode():
 			try:
 				in_content = t_input.get(0.0, tk.END)
@@ -904,6 +914,9 @@ class Root():
 		b_ascii_encode.grid(row=4,column=0)
 		b_ascii_decode = self.create_button(self.tab_code,fascii_decode,'ASCII-de')
 		b_ascii_decode.grid(row=4,column=1)
+
+		b_url_all_encode = self.create_button(self.tab_code, furl_all_encode, 'URL_ALL_en')
+		b_url_all_encode.grid(row=4, column=3)
 
 		t_input = self.create_text(self.tab_code,w=90,h=10)
 		t_input.grid(row=0,column=0,columnspan=6)
